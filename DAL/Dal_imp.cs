@@ -10,6 +10,12 @@ namespace DAL
     using DS;
     class Dal_imp : Idal
     {
+        //to use for IDs:
+        private static List<String> recycledIDs = new List<String>();
+        //8 digits serial number
+        //variable that change every new variable
+        private static int lastUsedID = 0;////////////change to store value and restore at beginning of run.
+        
         //add
 
         //add child to the DS
@@ -24,9 +30,28 @@ namespace DAL
         //add contract to the DS
         public bool addContract(Contract newContract)
         {
-            //if (DataSource.contractList.Exists(x => x. == newContract.ID))//////////////////////////////!
-            //    throw new Exception("Child already exists!\n");
-            //DataSource.contractList.Add(newContract);
+            //If there are no recycled IDs, assign the next number up
+            if (recycledIDs.Count() == 0)//no recycled IDs
+            {
+                //if all possible 8-digit codes are already in use, throw exception.
+                if (lastUsedID.ToString().Length > 8)
+                {
+                    throw new Exception("No available IDs.\nCannot create a new contract.\n");
+                }
+                ++lastUsedID;
+                newContract.contractID = String.Format("{0:00000000}", lastUsedID);
+            }
+            //There is a recycled ID to reuse, so use it and then remove it.
+            else
+            {
+                newContract.contractID = String.Format("{0:00000000}", recycledIDs[0]);
+                recycledIDs.RemoveAt(0);
+            }
+            //If a contract with this ID already exists, throw exception.
+            //////////////////////Just in case? sort out.....
+            if (DataSource.contractList.Exists(x => x.contractID == newContract.contractID))
+                throw new Exception("Contract already exists!\n");
+            DataSource.contractList.Add(newContract);
             return true;//!
         }
 
