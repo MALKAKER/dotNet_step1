@@ -1,0 +1,8 @@
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\bin\Debug\DS.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\bin\Debug\DS.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\bin\Debug\BE.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\bin\Debug\BE.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\obj\Debug\DS.csprojResolveAssemblyReference.cache
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\obj\Debug\DS.csproj.CoreCompileInputs.cache
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\obj\Debug\DS.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DS\obj\Debug\DS.pdb

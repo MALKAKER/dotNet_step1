@@ -1,0 +1,15 @@
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\UI.exe.config
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\UI.exe
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\UI.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\BE.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\BL.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\DAL.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\DS.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\BE.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\BL.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\DAL.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\DS.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csprojResolveAssemblyReference.cache
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csproj.CoreCompileInputs.cache
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.exe
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.pdb

@@ -8,29 +8,29 @@ using BE;
 namespace DAL
 {
     // manage the nanny software
-    interface Idal
+    public interface Idal
     {
         //Nanny functions:
         // ask the lecturer about the blah
-        Boolean addNanny(Nanny newNanny);
+        void addNanny(Nanny newNanny);
         Boolean removeNanny(String nannyId);
-        Boolean updateNanny(Nanny nannyToUpdate);
+        void updateNanny(Nanny nannyToUpdate);
 
 
         //Parent functions:
-        Boolean addParent(Parent newParent);
+        void addParent(Parent newParent);
         Boolean removeParent(String parentId);
-        Boolean updateParent(Parent parentToUpdate);
+        void updateParent(Parent parentToUpdate);
 
         //child function
-        Boolean addChild(Child newChild);
+        void addChild(Child newChild);
         Boolean removeChild(String childId);
-        Boolean updateChild(Child childToUpdate);
+        void updateChild(Child childToUpdate);
 
         //contract function:
-        Boolean addContract(Contract newContract);
+        void addContract(Contract newContract);
         Boolean removeContract(int contractId);
-        Boolean updateContract(Contract contractToUpdate);
+        void updateContract(Contract contractToUpdate);
 
         //lists of data
 
@@ -44,7 +44,12 @@ namespace DAL
         List<Child> getAllChildren(List<Parent> parents); 
         //________________________________
         List<Contract> getAllContracts();
-        //list of banck branches
-        //List<Nanny> getAllNanny(); todo
+        //return
+        //checks if the parent exist in the system
+        bool ParentExist(String id);
+        //checks if the Nanny exist in the system
+        bool NannyExist(String id);
+        //checks if the child exist in the system
+        bool ChildExist(String id);
     }
 }

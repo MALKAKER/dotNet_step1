@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BE;
-
+using DS;
 namespace DAL
 {
-    using DS;
+    
     class Dal_imp : Idal
     {
         //to use for IDs:
@@ -19,16 +19,16 @@ namespace DAL
         //add
 
         //add child to the DS
-        public bool addChild(Child newChild)
+        public void addChild(Child newChild)
         {
             if (DataSource.childList.Exists(x => x.ID == newChild.ID))
                 throw new Exception("Child already exists!\n");
             DataSource.childList.Add(newChild);
-            return true;//!
+            
         }
 
         //add contract to the DS
-        public bool addContract(Contract newContract)
+        public void addContract(Contract newContract)
         {
             //If there are no recycled IDs, assign the next number up
             if (recycledIDs.Count() == 0)//no recycled IDs
@@ -52,19 +52,18 @@ namespace DAL
             if (DataSource.contractList.Exists(x => x.contractID == newContract.contractID))
                 throw new Exception("Contract already exists!\n");
             DataSource.contractList.Add(newContract);
-            return true;//!
+            
         }
 
-        public bool addNanny(Nanny newNanny)
+        public void addNanny(Nanny newNanny)
         {
             DataSource.nannyList.Add(newNanny);
-            return true;//!
+            
         }
 
-        public bool addParent(Parent newParent)
+        public void addParent(Parent newParent)
         {
             DataSource.parentList.Add(newParent);
-            return true;//!
         }
 
         //get
@@ -108,7 +107,7 @@ namespace DAL
 
         public bool removeContract(int contractId)
         {
-            return DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractId == contractId));
+            return DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractID == contractId.ToString()));////need to initalize the contract id
         }
 
         public bool removeNanny(string nannyId)
@@ -122,32 +121,46 @@ namespace DAL
         }
 
         //update
-        public bool updateChild(Child childToUpdate)
+        public void updateChild(Child childToUpdate)
         {
             DataSource.childList.Remove(DataSource.childList.Find(x => x.ID ==childToUpdate.ID));
             DataSource.childList.Add(childToUpdate);
-            return true; //?
         }
 
-        public bool updateContract(Contract contractToUpdate)
+        public void updateContract(Contract contractToUpdate)
         {
-            DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractId == contractToUpdate.contractId));
-            DataSource.contractList.Add(contractToUpdate);
-            return true;//!
+            DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractID == contractToUpdate.contractID));
+            DataSource.contractList.Add(contractToUpdate);    
         }
 
-        public bool updateNanny(Nanny nannyToUpdate)
+        public void updateNanny(Nanny nannyToUpdate)
         {
             DataSource.nannyList.Remove(DataSource.nannyList.Find(x => x.ID == nannyToUpdate.ID));
             DataSource.nannyList.Add(nannyToUpdate);
-            return true;//!
         }
 
-        public bool updateParent(Parent parentToUpdate)
+        public void updateParent(Parent parentToUpdate)
         {
             DataSource.parentList.Remove(DataSource.parentList.Find(x => x.ID == parentToUpdate.ID));
             DataSource.parentList.Add(parentToUpdate);
-            return true;//! to ask!!!!!! if we need the bool
+        }
+
+        //exist
+
+        //checks if the parent exist in the system
+        public bool ParentExist(String id)
+        {
+            return DataSource.parentList.Exists(x => x.ID == id);
+        }
+        //checks if the Nanny exist in the system
+        public bool NannyExist(String id)
+        {
+            return DataSource.nannyList.Exists(x => x.ID == id);
+        }
+        //checks if the Nanny exist in the system
+        public bool ChildExist(String id)
+        {
+            return DataSource.childList.Exists(x => x.ID == id);
         }
     }
 }
