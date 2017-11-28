@@ -8,7 +8,7 @@ using DS;
 namespace DAL
 {
     
-    class Dal_imp : Idal
+    public class Dal_imp : Idal
     {
         //to use for IDs:
         private static List<String> recycledIDs = new List<String>();
@@ -161,6 +161,12 @@ namespace DAL
         public bool ChildExist(String id)
         {
             return DataSource.childList.Exists(x => x.ID == id);
+        }
+        //checks if the Contract exist in the system
+        
+        public bool ContractExist(string Contractid)
+        {
+            return DataSource.contractList.Exists(x => x.contractID == Contractid);
         }
     }
 }

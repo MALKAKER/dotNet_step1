@@ -51,5 +51,7 @@ namespace DAL
         bool NannyExist(String id);
         //checks if the child exist in the system
         bool ChildExist(String id);
+        //checks if the contract exist in the system
+        bool ContractExist(String Contractid);
     }
 }

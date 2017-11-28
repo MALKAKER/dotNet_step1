@@ -4,6 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BE;
+using GoogleMapsApi;
+using GoogleMapsApi.Entities.Common;
+using GoogleMapsApi.Entities.Directions.Request;
+using GoogleMapsApi.Entities.Directions.Response;
+using GoogleMapsApi.Entities.Elevation.Request;
+using GoogleMapsApi.Entities.Geocoding.Request;
+using GoogleMapsApi.Entities.Geocoding.Response;
+using GoogleMapsApi.StaticMaps;
+using GoogleMapsApi.StaticMaps.Entities;
+using System.Reflection;
 
 namespace BL
 {
@@ -13,10 +23,9 @@ namespace BL
         DAL.Idal dal;
         public void Cass_BlAdapter()
         {
-            DAL.DalFactory factory = new DAL.DalFactory();
-            dal = factory.getReference();
+            
+            dal = DAL.DalFactory.getReference();
         }
-
 
         public void addChild(Child newChild)
         {
@@ -98,7 +107,7 @@ namespace BL
             }
         }
 
-        public List<Nanny> betterMatchNanny(Address area)
+        public List<Nanny> betterMatchNanny(Address area, Parent parent)
         {
             throw new NotImplementedException();
         }
@@ -110,27 +119,41 @@ namespace BL
 
         public List<Child> getAllChildren()
         {
-            throw new NotImplementedException();
+            return dal.getAllChildren();
         }
-
+        /// <summary>
+        /// getAllChildren(List<Parent> parents) - return all the children 
+        /// belongs to specific parent
+        /// </summary>
+        /// <param name="parents"></param>
+        /// <returns></returns>
         public List<Child> getAllChildren(List<Parent> parents)
         {
-            throw new NotImplementedException();
+            return dal.getAllChildren(parents);
         }
-
+        /// <summary>
+        /// getAllContracts - return all contacts
+        /// </summary>
+        /// <returns></returns>
         public List<Contract> getAllContracts()
         {
-            throw new NotImplementedException();
+            return dal.getAllContracts();
         }
-
+        /// <summary>
+        /// getAllNanny - return all nanny
+        /// </summary>
+        /// <returns></returns>
         public List<Nanny> getAllNanny()
         {
-            throw new NotImplementedException();
+            return dal.getAllNanny();
         }
-
+        /// <summary>
+        /// getAllParents - return all parents
+        /// </summary>
+        /// <returns></returns>
         public List<Parent> getAllParents()
         {
-            throw new NotImplementedException();
+            return dal.getAllParents();
         }
 
         public List<Nanny> matchNanny(Parent parent)
@@ -142,23 +165,70 @@ namespace BL
         {
             throw new NotImplementedException();
         }
-
-        public List<Nanny> nannyAddress(bool isSort = false, delegateSort someSort = null)
+        /// <summary>
+        /// group by address
+        /// </summary>
+        /// <param name="isSort">delegate parameter</param>
+        /// <param name="someSort"></param>
+        /// <returns></returns>
+        public List<Nanny> nannyAddress(Address loc, bool isSort = false, delegateSort someSort = null)
         {
+            List<Nanny> nannyList = new List<Nanny>();
+            Dictionary<int, int> distances = new Dictionary<int, int>();
             if (someSort == null)
             {
                 someSort = sortByName;
             }
-            return null;
-            //return from nanny in dal.getAllNanny()
-            //       orderby nanny.lastName
-            //       group nanny by nanny.personAddress.city; //?
-                   ;
+            foreach (var nanny in dal.getAllNanny())
+            {
+                var drivingDirectionRequest = new DirectionsRequest
+                {
+                    TravelMode = TravelMode.Walking,
+                    Origin = loc.ToString(),
+                    Destination = nanny.personAddress.ToString()
+                };
+                DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+                Route route = directions.Routes.First();
+                Leg leg = route.Legs.First();
+                distances.Add(Int32.Parse(nanny.ID), leg.Distance.Value);
+            }
+            var nanniesByDistance =
+                from nanny in dal.getAllNanny()
+                from d in distances
+                where d.Key == Int32.Parse(nanny.ID)
+                group nanny by d.Value into temp
+                select new { dist = temp.Key, nan = temp};
+            foreach(var n in nanniesByDistance)
+            {
+                foreach (var item in n.nan)
+                    nannyList.Add(item);
+            }
+            return nannyList;
+            ////////////////////////////Check if this function works!!!!!!!!!!!!!!!!
         }
-
+        /// <summary>
+        /// group by minimum age
+        /// </summary>
+        /// <param name="isSort"></param>
+        /// <param name="someSort"></param>
+        /// <returns></returns>/!?
         public List<Nanny> nannyAge(bool isSort = false, delegateSort someSort = null)
         {
-            throw new NotImplementedException();
+            List<Nanny> nannyList = new List<Nanny>();
+            if (someSort == null)
+            {
+                someSort = sortByName;
+            }
+            var nannies = from nanny in dal.getAllNanny()
+                          orderby nanny.lastName, nanny.firstName
+                          group nanny by nanny.minAge into g
+                          select new { age = g.Key, nan = g};
+            foreach( var item in nannies)
+            {
+                foreach (var nanny in item.nan)
+                    nannyList.Add(nanny);
+            }
+            return nannyList;//////we didnt use sort 
         }
 
         public List<Child> noNanny()
@@ -170,55 +240,180 @@ namespace BL
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// removeChild - remove child from the array and from the contract 
+        /// the child sign in
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <returns>Boolian variable indicates if the
+        /// child is removeable
+        /// </returns>
         public bool removeChild(string childId)
         {
-            throw new NotImplementedException();
+            if (dal.ChildExist(childId) )
+            {
+                Contract c = dal.getAllContracts().FirstOrDefault(x => x.ChildId == childId);
+                dal.removeContract(Int32.Parse(c.contractID));///ask malka
+                dal.removeChild(childId);
+                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT CHILD AND REMOVE THEM
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
-
+        /// <summary>
+        /// removeContract - remove specific contract
+        /// </summary>
+        /// <param name="contractId"></param>
+        /// <returns></returns>
         public bool removeContract(int contractId)
         {
-            throw new NotImplementedException();
+            if (dal.ContractExist(contractId.ToString()))
+            {
+                dal.removeContract(contractId);
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
-
+        /// <summary>
+        /// removeNanny - remove nanny and her contract
+        /// </summary>
+        /// <param name="nannyId"></param>
+        /// <returns></returns>
         public bool removeNanny(string nannyId)
         {
-            throw new NotImplementedException();
+            if (dal.NannyExist(nannyId))
+            {
+                Contract c = dal.getAllContracts().FirstOrDefault(x => x.NannyId == nannyId);
+                dal.removeContract(Int32.Parse(c.contractID));///ask malka
+                dal.removeNanny(nannyId);
+                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT nanny AND REMOVE THEM
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
-
+        /// <summary>
+        /// removeParent - remove parent her/his sibllings and contrracts are 
+        /// related to him/she
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         public bool removeParent(string parentId)
         {
-            throw new NotImplementedException();
+            if (dal.ParentExist(parentId))
+            {
+                Contract c = dal.getAllContracts().FirstOrDefault(x => x.ParentId == parentId);
+                dal.removeContract(Int32.Parse(c.contractID));///ask malka
+                dal.getAllChildren().RemoveAll(x => x.parentId == parentId);
+                dal.removeParent(parentId);
+                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT parent AND REMOVE THEM
+            }
+            else
+            {
+                return false;
+            }
+            return true;
         }
-
-        public List<Contract> specificContracts(delegateCondition condition)
+        /// <summary>
+        /// TODO!!
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public List<Contract> specificContracts(Predicate<Contract> condition = null)
         {
-            throw new NotImplementedException();
+            List<Contract> result;
+            if (condition == null)
+            {
+                result = dal.getAllContracts();
+            }
+            else
+            {
+                result = dal.getAllContracts().FindAll(condition);
+            }
+            return result;
         }
-
+        /// <summary>
+        /// tamatVacation - This function returns the nannies which
+        /// have a vacation like the tamat vacation
+        /// </summary>
+        /// <returns></returns>
         public List<Nanny> tamatVacation()
         {
-            throw new NotImplementedException();
+            List<Nanny> nannies = new List<Nanny>();
+            var tmpNannies = from Nanny in dal.getAllNanny()
+                                  orderby Nanny.costPerMonth
+                                  where Nanny.isVacation == true
+                                  select Nanny;
+            foreach (var item in tmpNannies)
+            {
+                nannies.Add(item);
+            }
+            return nannies;
         }
-
+        //updating child details
         public void updateChild(Child childToUpdate)
         {
-            throw new NotImplementedException();
+            if (dal.ChildExist(childToUpdate.ID))
+            {
+                dal.updateChild(childToUpdate);
+            }
+            else
+            {
+                throw new Exception("ERROR: The child doesn't exist in the system!");
+            }
         }
-
+        /// <summary>
+        /// updateContract - updating contract details
+        /// </summary>
+        /// <param name="contractToUpdate"></param>
         public void updateContract(Contract contractToUpdate)
         {
-            throw new NotImplementedException();
+            if (dal.ContractExist(contractToUpdate.contractID))
+            {
+                dal.updateContract(contractToUpdate);
+            }
+            else
+            {
+                throw new Exception("ERROR: This contract doesn't exist in the system.");
+            }
         }
-
+        /// <summary>
+        /// updateNanny - updates nanny
+        /// </summary>
+        /// <param name="nannyToUpdate"></param>
         public void updateNanny(Nanny nannyToUpdate)
         {
-            throw new NotImplementedException();
+            if (dal.NannyExist(nannyToUpdate.ID))
+            {
+                dal.updateNanny(nannyToUpdate);
+            }
+            else
+            {
+                throw new Exception("ERROR: Nanny doesn't exist in the system.");
+            }
         }
-
+        /// <summary>
+        /// updateParent - updates parent
+        /// </summary>
+        /// <param name="parentToUpdate"></param>
         public void updateParent(Parent parentToUpdate)
         {
-            throw new NotImplementedException();
+            if (dal.NannyExist(parentToUpdate.ID))
+            {
+                dal.updateParent(parentToUpdate);
+            }
+            else
+            {
+                throw new Exception("ERROR: Parent doesn't exist in the system.");
+            }
         }
         //nannies grouping by language
         public List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null) { return null; }
@@ -239,6 +434,11 @@ namespace BL
             }
             return wage;
         }
+        /// <summary>
+        /// calculate the bill if the parent pays hourly
+        /// </summary>
+        /// <param name="contract"> the contract in proccess</param>
+        /// <returns>the total price</returns>
         private decimal hours(Contract contract)
         {
             if (contract.isAnotherChild)
@@ -250,6 +450,11 @@ namespace BL
                 return contract.hourWage * contract.totalHours * 4m;
             }
         }
+        /// <summary>
+        /// calculate the bill if the parent pays monthly
+        /// </summary>
+        /// <param name="contract"> the contract in proccess</param>
+        /// <returns>the total price</returns>
         private decimal months(Contract contract)
         {
             //is another child need to update in the dal layer!!!!
@@ -262,29 +467,126 @@ namespace BL
                 return contract.monthlyWage;
             }
         }
+        /// <summary>
+        /// checks if the first element is bigger (via stars->reffers to nanny) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByStars(Nanny first, Nanny second)
         {
             return first.currentStars > second.currentStars? true : false;
         }
+        /// <summary>
+        /// checks if the first element is bigger (via full name) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByName(Person first, Person second)
         {
             return ((first.lastName).CompareTo(second.lastName) >= 0 && (first.firstName).CompareTo(second.firstName) > 0) ? true : false;
         }
+        /// <summary>
+        /// checks if the first element is bigger (via minage) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByMinAge(Nanny first, Nanny second)
         {
             return first.minAge > second.minAge ? true : false;
         }
+        /// <summary>
+        /// checks if the first element is bigger (via max age) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByMaxAge(Nanny first, Nanny second)
         {
             return first.maxAge > second.maxAge ? true : false;
         }
+        /// <summary>
+        /// checks if the first element is bigger (via price per hour) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByPricePerHour(Nanny first, Nanny second)
         {
             return first.costPerHour < second.costPerHour ? true : false;
         }
+        /// <summary>
+        /// checks if the first element is bigger (via monthly price) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
         public bool sortByPricePerMonth(Nanny first, Nanny second)
         {
             return first.costPerMonth < second.costPerMonth ? true : false;
         }
+        /// <summary>
+        /// ContractParentFittnes - check if the contract fitts to a specific term
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <returns></returns>
+        public bool ContractParentFittnes(Contract contract, String id)
+        {
+            return contract.ParentId == id;
+        }
+        /// <summary>
+        /// ContractChildFittnes - check if the contract relates to child
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool ContractChildFittnes(Contract contract, String id)
+        {
+            return contract.ChildId == id;
+        }
+        /// <summary>
+        /// ContractNannyFittnes - check if the contract relates to nanny
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool ContractNannyFittnes(Contract contract, String id)
+        {
+            return contract.NannyId == id;
+        }
+        /// <summary>
+        /// ContractHourWageFittnes - check the wealth of the contract hourly
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="id"></param>
+        /// <returns>bool</returns>
+        public bool ContractHourWageFittnes(Contract contract, int wage)
+        {
+            return contract.hourWage >= wage;
+        }
+        /// <summary>
+        /// ContractMonthWageFittnes - check the wealth of the contract monthly 
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool ContractMonthWageFittnes(Contract contract, int wage)
+        {
+            return contract.monthlyWage >= wage;
+        }
+        /// <summary>
+        /// ContractTotalHoursFittnes - check the contract above 
+        /// total hours threshold
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool ContractTotalHoursFittnes(Contract contract, float hours)
+        {
+            return contract.totalHours >= hours;
+        }
+        
     }
 }

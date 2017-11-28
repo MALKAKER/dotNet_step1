@@ -13,3 +13,5 @@ C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csprojRe
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csproj.CoreCompileInputs.cache
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.exe
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\GoogleMapsApi.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\bin\Debug\Newtonsoft.Json.dll

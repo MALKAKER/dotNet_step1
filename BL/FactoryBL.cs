@@ -8,19 +8,20 @@ namespace BL
 {
     public sealed class FactoryBL
     {
-        private static readonly FactoryBL instance = new FactoryBL();
+        private static IBL instance = null;
 
-        public static FactoryBL Instance
+        public static IBL Instance
         {
-            get { return FactoryBL.instance; }
-        }
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new BL_imp();
+                }
 
-        static FactoryBL() { }
-        private FactoryBL() { }
-
-        public IBL getReference()
-        {
-            return new BL_imp();
+                return instance;
+            }
         }
+       private FactoryBL() { }
     }
 }

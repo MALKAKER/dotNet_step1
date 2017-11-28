@@ -9,19 +9,18 @@ namespace DAL
 {
     public sealed class DalFactory
     {
-        private static readonly DalFactory instance = new DalFactory();
+        private static Idal dal = null;
+ 
+        private DalFactory() { }
 
-        public static DalFactory Instance
+        public  static Idal getReference()
         {
-            get { return DalFactory.instance; }
-        }
+            if(dal == null)
+            {
+                dal = new Dal_imp();//here we change after using xml
+            }
 
-        static DalFactory() { }
-        //private DalFactory() { }
-
-        public Idal getReference()
-        {
-            return new Dal_imp();//here we change after using xml
+            return dal;
         }
     }
 }

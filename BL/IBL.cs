@@ -1,16 +1,15 @@
 ﻿using BE;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace BL
 {
     //delegate for some conditions to search contract
-    public delegate bool delegateCondition(Contract contract, Object cond);
+    public delegate bool delegateCondition(Contract contract, Object opt = null);
     //delegate for some methods to sort the nannies
     public delegate bool delegateSort(Person first, Person second);
+    
     public interface IBL
     {
         //Nanny functions:
@@ -55,11 +54,11 @@ namespace BL
         //matches optional nannies to parent according to specific constrains
         List<Nanny> matchNanny(Parent parent);
 
-        //matches optional nannies to parent according to area
+        //(help function to betterMatchNanny) matches optional nannies to parent according to area?
         List<Nanny> matchNanny(Address area);
 
         //matches optional nannies to parent according to specific constrains and area
-        List<Nanny> betterMatchNanny(Address area);
+        List<Nanny> betterMatchNanny(Address area, Parent parent);
 
         //returns children that still dont have nanny
         List<Child> noNanny();
@@ -68,7 +67,7 @@ namespace BL
         List<Nanny> tamatVacation();
 
         //returns list of contracts that fit to some conditions
-        List<Contract> specificContracts(delegateCondition condition);
+        List<Contract> specificContracts(Predicate<Contract> condition);
 
         //returns the number of the contracts that fit to the condition
         int numberOfContracts(delegateCondition condition);
@@ -79,7 +78,7 @@ namespace BL
         List<Nanny> nannyAge(Boolean isSort =false, delegateSort someSort = null);
         
         //nannies grouping by address
-        List<Nanny> nannyAddress(Boolean isSort = false, delegateSort someSort = null);
+        List<Nanny> nannyAddress(Address loc, Boolean isSort = false, delegateSort someSort = null);
         //nannies grouping by launguage
         List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null);
         //nannies grouping by lift
@@ -88,6 +87,5 @@ namespace BL
         //list of banck branches?
         List<Contract> contractDistance(Boolean isSort = false, delegateSort someSort = null);
         
-       
     }
 }
