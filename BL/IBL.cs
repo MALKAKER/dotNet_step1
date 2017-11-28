@@ -52,16 +52,16 @@ namespace BL
         //another methods to BL:
 
         //matches optional nannies to parent according to specific constrains
-        List<Nanny> matchNanny(Parent parent);
+        List<Nanny> initialMatch(Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
 
         //(help function to betterMatchNanny) matches optional nannies to parent according to area?
-        List<Nanny> matchNanny(Address area);
+        List<Nanny> nanniesNearby(Parent parent, float maxDistance);
 
         //matches optional nannies to parent according to specific constrains and area
-        List<Nanny> betterMatchNanny(Address area, Parent parent);
+        List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
 
         //returns children that still dont have nanny
-        List<Child> noNanny();
+        List<Child> childrenWithNoNanny();
 
         //returns the nannies vication
         List<Nanny> tamatVacation();
@@ -70,7 +70,7 @@ namespace BL
         List<Contract> specificContracts(Predicate<Contract> condition);
 
         //returns the number of the contracts that fit to the condition
-        int numberOfContracts(delegateCondition condition);
+        int numberOfContracts(Predicate<Contract> condition);
 
         //methods that returns lists grouping by some conditions:
 
@@ -78,7 +78,7 @@ namespace BL
         List<Nanny> nannyAge(Boolean isSort =false, delegateSort someSort = null);
         
         //nannies grouping by address
-        List<Nanny> nannyAddress(Address loc, Boolean isSort = false, delegateSort someSort = null);
+        List<Nanny> nannyAddress(Address loc, float kilometres, Boolean isSort = false, delegateSort someSort = null);
         //nannies grouping by launguage
         List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null);
         //nannies grouping by lift
