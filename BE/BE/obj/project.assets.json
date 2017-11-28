@@ -3711,11 +3711,11 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\BE\\BE\\BE.csproj",
+      "projectUniqueName": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\PL\\BE\\BE\\BE.csproj",
       "projectName": "BE",
-      "projectPath": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\BE\\BE\\BE.csproj",
+      "projectPath": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\PL\\BE\\BE\\BE.csproj",
       "packagesPath": "C:\\Users\\malki\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\BE\\BE\\obj\\",
+      "outputPath": "C:\\Users\\malki\\Documents\\Visual Studio 2017\\Projects\\PL\\BE\\BE\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\malki\\AppData\\Roaming\\NuGet\\NuGet.Config",
