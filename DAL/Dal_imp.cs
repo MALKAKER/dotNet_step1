@@ -10,12 +10,15 @@ namespace DAL
     
     public class Dal_imp : Idal
     {
+        #region Contract ID Constans
         //to use for IDs:
         private static List<String> recycledIDs = new List<String>();
         //8 digits serial number
         //variable that change every new variable
         private static int lastUsedID = 0;////////////change to store value and restore at beginning of run.
-        
+        #endregion
+
+        #region Add Functions
         //add
 
         //add child to the DS
@@ -26,7 +29,7 @@ namespace DAL
             DataSource.childList.Add(newChild);
             
         }
-
+        
         //add contract to the DS
         public void addContract(Contract newContract)
         {
@@ -65,10 +68,10 @@ namespace DAL
         {
             DataSource.parentList.Add(newParent);
         }
+        #endregion
 
+        #region Get All Function
         //get
-
-
         public List<Child> getAllChildren()
         {
             return DataSource.childList;
@@ -97,7 +100,9 @@ namespace DAL
         {
             return DataSource.parentList;
         }
+        #endregion
 
+        #region Remove Function
         //remove 
 
         public bool removeChild(string childId)
@@ -119,14 +124,15 @@ namespace DAL
         {
             return DataSource.parentList.Remove(DataSource.parentList.Find(x => x.ID == parentId));
         }
+        #endregion
 
+        #region Update Functions
         //update
         public void updateChild(Child childToUpdate)
         {
             DataSource.childList.Remove(DataSource.childList.Find(x => x.ID ==childToUpdate.ID));
             DataSource.childList.Add(childToUpdate);
         }
-
         public void updateContract(Contract contractToUpdate)
         {
             DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractID == contractToUpdate.contractID));
@@ -144,9 +150,10 @@ namespace DAL
             DataSource.parentList.Remove(DataSource.parentList.Find(x => x.ID == parentToUpdate.ID));
             DataSource.parentList.Add(parentToUpdate);
         }
+        #endregion
 
+        #region Exsistance Functions
         //exist
-
         //checks if the parent exist in the system
         public bool ParentExist(String id)
         {
@@ -168,5 +175,6 @@ namespace DAL
         {
             return DataSource.contractList.Exists(x => x.contractID == Contractid);
         }
+        #endregion
     }
 }
