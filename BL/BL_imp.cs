@@ -524,7 +524,15 @@ namespace BL
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null) { return null; }
+        public List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null)
+        {
+            var nannies = (from nanny in dal.getAllNanny()
+                           orderby nanny.expYears
+                           group nanny by nanny.nannyLanguage into tmp
+                           select tmp).ToDictionary(k => k.Key, v => v.ToList());
+            //return nannies.Values;
+            return null;//////todo
+        }
 
         /// <summary>
         /// TODO: nannies grouping by lift
