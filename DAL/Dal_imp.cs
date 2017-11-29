@@ -176,5 +176,28 @@ namespace DAL
             return DataSource.contractList.Exists(x => x.contractID == Contractid);
         }
         #endregion
+
+        #region Get Entity Functions
+        //returns the parent Entity in the system
+        public Parent ParentEntity(String id)
+        {
+            return DataSource.parentList.First(x => x.ID ==id);
+        }
+        //returns the Nanny Entity in the system
+        public Nanny NannyEntity(String id)
+        {
+            return DataSource.nannyList.First(x => x.ID == id);
+        }
+        //returns the child Entity in the system
+        public Child ChildEntity(String id)
+        {
+            return DataSource.childList.First(x => x.ID == id);
+        }
+        //returns the contract Entity in the system
+        public Contract ContractEntity(String Contractid)
+        {
+            return DataSource.contractList.First(x => x.contractID == Contractid);
+        }
+        #endregion
     }
 }

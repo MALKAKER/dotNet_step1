@@ -51,12 +51,12 @@ namespace BL
 
         public void addContract(Contract newContract)
         {
-            DateTime age = (dal.getAllChildren()).FirstOrDefault(x => x.ID == newContract.ChildId).getCurrentAge();
+            DateTime age = (dal.ChildEntity(newContract.ChildId)).getCurrentAge();
             if (((dal.getAllContracts()).FindAll(x => x.NannyId == newContract.NannyId)).Count < ((dal.getAllNanny()).Find(x => x.ID == newContract.NannyId)).maxChildren)
             {
                 throw new Exception("ERROR: Nanny is busy!\n");
             }
-            else if(dal.NannyExist(newContract.NannyId) && dal.ParentExist(newContract.ParentId))
+            else if(dal.NannyExist(newContract.NannyId) && dal.ParentExist(newContract.ParentId) && dal.ParentEntity(newContract.ParentId).childrenId.Contains(newContract.ChildId))
             {
                 dal.addContract(newContract);
             }

@@ -44,7 +44,9 @@ namespace DAL
         List<Child> getAllChildren(List<Parent> parents); 
         //________________________________
         List<Contract> getAllContracts();
-        //return
+
+        //existance:
+
         //checks if the parent exist in the system
         bool ParentExist(String id);
         //checks if the Nanny exist in the system
@@ -53,5 +55,17 @@ namespace DAL
         bool ChildExist(String id);
         //checks if the contract exist in the system
         bool ContractExist(String Contractid);
+
+        //retrieve specific object
+
+        //checks if the parent Entity in the system
+        Parent ParentEntity(String id);
+        //checks if the Nanny Entity in the system
+        Nanny NannyEntity(String id);
+        //checks if the child Entity in the system
+        Child ChildEntity(String id);
+        //checks if the contract Entity in the system
+        Contract ContractEntity(String Contractid);
+
     }
 }
