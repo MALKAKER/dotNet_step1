@@ -51,7 +51,7 @@ namespace BL
 
         public void addContract(Contract newContract)
         {
-            DateTime age = (dal.ChildEntity(newContract.ChildId)).getCurrentAge();
+            DateTime age = (dal.ChildEntity(newContract.ChildId)).currentAge;
             if (((dal.getAllContracts()).FindAll(x => x.NannyId == newContract.NannyId)).Count < ((dal.getAllNanny()).Find(x => x.ID == newContract.NannyId)).maxChildren)
             {
                 throw new Exception("ERROR: Nanny is busy!\n");
@@ -78,7 +78,7 @@ namespace BL
         public void addNanny(Nanny newNanny)
         {
 
-            DateTime age = newNanny.getCurrentAge();
+            DateTime age = newNanny.currentAge;
             if (!dal.NannyExist(newNanny.ID))
                 dal.addNanny(newNanny);
             else
@@ -151,15 +151,40 @@ namespace BL
         }
 
         /// <summary>
-        /// TODO
+        /// calculate distance between 2 addresses
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
+
+        public int calculateDistance(Address loc, Address dest)
+        {
+            var drivingDirectionRequest = new DirectionsRequest
+            {
+                TravelMode = TravelMode.Walking,
+                Origin = loc.ToString(),
+                Destination = dest.ToString()
+            };
+            DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+            Route route = directions.Routes.First();
+            Leg leg = route.Legs.First();
+            return leg.Distance.Value;
+        }
+        
+        /// <summary>
+        /// grouping by distance (todo- think how to group by another address)
         /// </summary>
         /// <param name="isSort"></param>
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public List<Contract> contractDistance(bool isSort = false, delegateSort someSort = null)
+        public Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null)
         {
-            throw new NotImplementedException();
+            sort = sort == null ? ((Contract c) => c.totalHours) : sort;
+            var contracts = (from contract in dal.getAllContracts()
+                            orderby sort, contract.ChildId
+                            group contract by calculateDistance(dal.ParentEntity(contract.ParentId).areaToSearchNanny, dal.NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList());//i didnt consider the optional location
+            return contracts;
         }
 
         /// <summary>
@@ -246,14 +271,11 @@ namespace BL
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public List<Nanny> nannyAddress(Address loc, float kilometres, bool isSort = false, delegateSort someSort = null)
+        public Dictionary<int, List<Nanny>> nannyAddress(Address loc, float kilometres, bool isSort = false, Func<Nanny, float> sort = null)
         {
-            List<Nanny> nannyList = new List<Nanny>();
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
             Dictionary<int, int> distances = new Dictionary<int, int>();
-            if (someSort == null)
-            {
-                someSort = sortByName;
-            }
+            //!
             foreach (var nanny in dal.getAllNanny())
             {
                 var drivingDirectionRequest = new DirectionsRequest
@@ -268,17 +290,14 @@ namespace BL
                 distances.Add(Int32.Parse(nanny.ID), leg.Distance.Value);
             }
             var nanniesByDistance =
-                from nanny in dal.getAllNanny()
+                (from nanny in dal.getAllNanny()
                 from d in distances
                 where d.Key == Int32.Parse(nanny.ID) && d.Value <= kilometres
+                orderby sort , nanny.firstName, nanny.lastName
                 group nanny by d.Value into temp
-                select new { dist = temp.Key, nan = temp};
-            foreach(var n in nanniesByDistance)
-            {
-                foreach (var item in n.nan)
-                    nannyList.Add(item);
-            }
-            return nannyList;
+                select new { lang = temp.Key, nan = temp}).ToDictionary(k => k.lang, v => v.nan.ToList());
+            
+            return nanniesByDistance;
             ////////////////////////////Check if this function works!!!!!!!!!!!!!!!!
         }
 
@@ -289,23 +308,19 @@ namespace BL
         /// <param name="someSort"></param>
         /// <returns></returns>/!?
 
-        public List<Nanny> nannyAge(bool isSort = false, delegateSort someSort = null)
+        public Dictionary<int, List<Nanny>> nannyAge(bool isSort = false, Func<Nanny, int> sort = null)
         {
-            List<Nanny> nannyList = new List<Nanny>();
-            if (someSort == null)
+            
+            if (sort == null)
             {
-                someSort = sortByName;
+                sort = (Nanny n) => n.maxAge;
             }
-            var nannies = from nanny in dal.getAllNanny()
-                          orderby someSort(nanny, nanny)
+            var nannies = (from nanny in dal.getAllNanny()
+                          orderby sort, nanny.lastName, nanny.firstName
                           group nanny by nanny.minAge into g
-                          select new { age = g.Key, nan = g};
-            foreach( var item in nannies)
-            {
-                foreach (var nanny in item.nan)
-                    nannyList.Add(nanny);
-            }
-            return nannyList;//////we didnt use sort 
+                          select new { age = g.Key, nan = g}).ToDictionary(k => k.age, v => v.nan.ToList());
+            
+            return nannies;//////we didnt use sort 
         }
 
         /// <summary>
@@ -518,30 +533,39 @@ namespace BL
         }
 
         /// <summary>
-        /// TODO: nannies grouping by language
+        /// nannies grouping by language
         /// </summary>
         /// <param name="isSort"></param>
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null)
+        public Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null)
         {
+            //grouping by the first language because the list is problematic
+            sort = sort == null ? ((Nanny n) => n.expYears) : sort;
             var nannies = (from nanny in dal.getAllNanny()
-                           orderby nanny.expYears
-                           group nanny by nanny.nannyLanguage into tmp
-                           select tmp).ToDictionary(k => k.Key, v => v.ToList());
-            //return nannies.Values;
-            return null;//////todo
+                           orderby sort, nanny.lastName, nanny.firstName
+                           group nanny by nanny.nannyLanguage[0] into tmp//!!
+                           select new {lang = tmp.Key, nan =tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+            return nannies;
         }
 
         /// <summary>
-        /// TODO: nannies grouping by lift
+        /// nannies grouping by lift
         /// </summary>
         /// <param name="isSort"></param>
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public List<Nanny> nannyLift(Boolean isSort = false, delegateSort someSort = null) { return null; }
+        public Dictionary<bool, List<Nanny>> nannyLift(Boolean isSort = false, Func<Nanny, float> sort = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+            var nannies = (from nanny in dal.getAllNanny()
+                           orderby sort, nanny.lastName, nanny.firstName
+                           group nanny by nanny.isLift into tmp//!!
+                           select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList());
+            return nannies;
+        }
 
         /// <summary>
         /// calculatets the nannies wage
@@ -776,7 +800,7 @@ namespace BL
             foreach (var child in children)
             {
                 var nannies = from nanny in tempNannyList
-                              where child.getCurrentAge().Month >= nanny.minAge && child.getCurrentAge().Month <= nanny.maxAge//nanny takes children of that age
+                              where child.currentAge.Month >= nanny.minAge && child.currentAge.Month <= nanny.maxAge//nanny takes children of that age
                               where nanny.workField == spec && nanny.nannyGender == gender && (nanny.nannySkills).Contains(skill) &&
                                     minExpYears == nanny.expYears && maxCostPerHour >= nanny.costPerHour && nanny.currentStars >= minStars
                               orderby nanny.lastName, nanny.firstName/////////Change to sort by distance?
@@ -844,7 +868,7 @@ namespace BL
         /// <param name="maxDistance"></param>
         /// <returns></returns>
 
-        public List<Nanny> nanniesNearby(Parent parent, float maxDistance)
+        public Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance)
         {
             Address addressToSearchFrom = new Address();
             if (addressToSearchFrom == null)//If parent did not define an address from which to search, use their home address.
@@ -854,5 +878,7 @@ namespace BL
             //////////////////////commment on next line............
             return nannyAddress(addressToSearchFrom, maxDistance, true);//Do we want this? delegateSort someSort = null, float );
         }
+
+        
     }
 }

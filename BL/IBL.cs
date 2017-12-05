@@ -49,13 +49,13 @@ namespace BL
         
         List<Contract> getAllContracts();
 
-        //another methods to BL:
+        //Another methods to BL:
 
         //matches optional nannies to parent according to specific constrains
         List<Nanny> initialMatch(Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
 
         //(help function to betterMatchNanny) matches optional nannies to parent according to area?
-        List<Nanny> nanniesNearby(Parent parent, float maxDistance);
+        Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance);
 
         //matches optional nannies to parent according to specific constrains and area
         List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
@@ -75,17 +75,19 @@ namespace BL
         //methods that returns lists grouping by some conditions:
 
         //nannies grouping by age
-        List<Nanny> nannyAge(Boolean isSort =false, delegateSort someSort = null);
-        
+        Dictionary<int, List<Nanny>> nannyAge(Boolean isSort =false, Func<Nanny, int> sort = null);
+
         //nannies grouping by address
-        List<Nanny> nannyAddress(Address loc, float kilometres, Boolean isSort = false, delegateSort someSort = null);
+        Dictionary<int, List<Nanny>> nannyAddress(Address loc, float kilometres, Boolean isSort = false, Func<Nanny, float> sort = null);
+
         //nannies grouping by launguage
-        List<Nanny> nannyLanguage(Boolean isSort = false, delegateSort someSort = null);
+        Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null);
+
         //nannies grouping by lift
-        List<Nanny> nannyLift(Boolean isSort = false, delegateSort someSort = null);
-        
-        //list of banck branches?
-        List<Contract> contractDistance(Boolean isSort = false, delegateSort someSort = null);
+        Dictionary<bool, List<Nanny>> nannyLift(Boolean isSort = false, Func<Nanny, float> sort = null);
+
+        //the distance from the parents location to the nannie's
+        Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null);
         
     }
 }
