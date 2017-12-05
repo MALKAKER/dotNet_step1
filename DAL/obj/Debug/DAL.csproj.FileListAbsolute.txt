@@ -1,10 +1,10 @@
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\DAL.dll
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\DAL.pdb
-C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\BE.dll
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\DS.dll
-C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\BE.pdb
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\DS.pdb
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\obj\Debug\DAL.csprojResolveAssemblyReference.cache
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\obj\Debug\DAL.csproj.CoreCompileInputs.cache
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\obj\Debug\DAL.dll
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\obj\Debug\DAL.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\BE1.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\DAL\bin\Debug\BE1.pdb

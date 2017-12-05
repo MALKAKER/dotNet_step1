@@ -1,0 +1,5 @@
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\BE1\bin\Debug\BE1.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\BE1\bin\Debug\BE1.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\BE1\obj\Debug\BE.csproj.CoreCompileInputs.cache
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\BE1\obj\Debug\BE1.dll
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\BE1\obj\Debug\BE1.pdb
