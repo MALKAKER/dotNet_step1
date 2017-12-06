@@ -1,37 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 namespace BE
 {
     public class Address
     {
-        //Fields:
+        private string p_city;
+        private string p_postCode;
+
+        #region Fields
         public String country{ get; set; }
         //public String county{ get; set; }
+  
         public String city
         {
             get
             {
-                return city;
+                return p_city;
             }
             set
             {
-                if (value.Contains("1") || value.Contains("2") || value.Contains("3")
-                    || value.Contains("4") || value.Contains("5") || value.Contains("6") 
-                    || value.Contains("7") || value.Contains("8") || value.Contains("9") 
-                    || value.Contains("0"))
+                Console.WriteLine("kuku");
+                if (value.Any(char.IsDigit))
                 {
                     throw new Exception("Invalid city!\n");
                 }
-                
-                city =  char.ToUpper(value[0]) + value.Substring(1).ToLower();
+                p_city = value;
+               // city =  char.ToUpper(value[0]) + value.Substring(1).ToLower();
             }
         }
         public String postCode
         {
             get
             {
-                return postCode;
+                return p_postCode;
             }
             set
             {
@@ -43,9 +46,10 @@ namespace BE
                     }
                     throw new Exception("Invalid post code!\nPost codes now contain 7 digits.\n");
                 }
-                postCode = value;
+                p_postCode = value;
             }
         }
+
         public String street
         {
             get { return street; }
@@ -85,19 +89,19 @@ namespace BE
             get;
             set;
         }
-
+        #endregion
 
         //Methods:
 
         //Constructors:
-        public Address(String myCountry, String myCity, String myPostCode, String myStreet, string myHouse,/* String myCounty=null,*/ String myAddressLine2=null, string myFlat=null, string myFloor=null)
+        public Address(String myCountry, String myCity, String myPostCode, String myStreet, string myHouse, String myAddressLine2=null, string myFlat=null, string myFloor=null)
         {
-            UpdateAddress(myStreet, myPostCode, myHouse, myFloor, myFlat, /*myCounty,*/ myCountry, myCity, myAddressLine2);
+            UpdateAddress( myCountry,  myCity,  myPostCode,  myStreet,  myHouse,  myAddressLine2,  myFlat,  myFloor);
         }
         public Address() { }
 
         //Update function (updates class details):
-        internal void UpdateAddress(String myCountry, String myCity, String myPostCode, String myStreet, String myHouse,  String myAddressLine2 = null, string myFlat = null, string myFloor = null)
+        internal void UpdateAddress(String myCountry, String myCity, String myPostCode, String myStreet, string myHouse,  String myAddressLine2/* = null*/, string myFlat/* = null*/, string myFloor/* = null*/)
         {
             country = myCountry;
             //county = myCounty;
