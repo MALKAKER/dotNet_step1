@@ -6,10 +6,16 @@ namespace BE
 {
     public class Address
     {
-        private string p_city;
-        private string p_postCode;
+        #region Feilds
+        private string cityP;
+        private string postCodeP;
+        private string streetP;
+        private string houseP;
+        private string flatP;
 
-        #region Fields
+        #endregion
+
+        #region Attributes
         public String country{ get; set; }
         //public String county{ get; set; }
   
@@ -17,24 +23,24 @@ namespace BE
         {
             get
             {
-                return p_city;
+                return cityP;
             }
             set
             {
-                Console.WriteLine("kuku");
+                //Console.WriteLine("kuku");
                 if (value.Any(char.IsDigit))
                 {
                     throw new Exception("Invalid city!\n");
                 }
-                p_city = value;
-               // city =  char.ToUpper(value[0]) + value.Substring(1).ToLower();
+                
+                cityP =  char.ToUpper(value[0]) + value.Substring(1).ToLower();
             }
         }
         public String postCode
         {
             get
             {
-                return p_postCode;
+                return postCodeP;
             }
             set
             {
@@ -46,23 +52,19 @@ namespace BE
                     }
                     throw new Exception("Invalid post code!\nPost codes now contain 7 digits.\n");
                 }
-                p_postCode = value;
+                postCodeP = value;
             }
         }
-
         public String street
         {
-            get { return street; }
+            get { return streetP; }
             set
             {
-                if (value.Contains("1") || value.Contains("2") || value.Contains("3")
-                    || value.Contains("4") || value.Contains("5") || value.Contains("6")
-                    || value.Contains("7") || value.Contains("8") || value.Contains("9")
-                    || value.Contains("0"))
+                if (value.Any(char.IsDigit))
                 {
                     throw new Exception("Invalid street!\n");
                 }
-                street = value;
+                streetP = value;
             }
         }
         public String addressLine2
@@ -73,15 +75,29 @@ namespace BE
         //There is no exeption because there is a number of building like 12A
         public string house
         {
-            get;
-            set;
+            get { return houseP; }
+            set
+            {
+                if (value.Contains("-"))
+                {
+                    throw new Exception("Invalid house number");
+                }
+                houseP = value;
+            }
         }
         //There is no exeption because there is a number of building like 3A, and its string because 
         //there are private houses
         public string flat
         {
-            get;
-            set;
+            get { return flatP; }
+            set
+            {
+                if (value.Contains("-"))
+                {
+                    throw new Exception("Invalid flat number");
+                }
+                flatP = value;
+            }
         }
         //there is a negative floor or with letter
         public string floor
@@ -91,7 +107,7 @@ namespace BE
         }
         #endregion
 
-        //Methods:
+        #region Methods:
 
         //Constructors:
         public Address(String myCountry, String myCity, String myPostCode, String myStreet, string myHouse, String myAddressLine2=null, string myFlat=null, string myFloor=null)
@@ -132,7 +148,9 @@ namespace BE
             //27 Rue Yafo
             //91999 JERUSALEM
             //ISRAEL
-            return String.Format(flat!=null?"{0}/{1}":"{0}"+" {2}\n{3} {4}\n{5}", house, flat, street, postCode, city, country);
+
+            return String.Format((flat!=null?"{0}/{1}":"{0}")+" {2}\n{3} {4}\n{5}", house, flat, street, postCode, city, country);
         }
+        #endregion
     }
 }

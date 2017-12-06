@@ -6,61 +6,75 @@ namespace BE
 {
     public class Parent : Person
     {
-        //Fields
+        #region Fields
+        private Dictionary<DayOfWeek, KeyValuePair<int, int>> parentWorkhoursP;
+        private string firstNameAnotherParentP;
+        private string lastNameAnotherParentP;
+        private string mobileAnotherParentP;
+        private List<string> childrenIdP;
+        #endregion
+
+        #region Attributes
         public Dictionary<DayOfWeek, KeyValuePair<int, int>> parentWorkhours
         {
-            get { return parentWorkhours; }
+            get { return parentWorkhoursP; }
             set
             {
-                foreach (var day in value)
-                    this.parentWorkhours.Add(day.Key, new KeyValuePair<int, int>(day.Value.Key, day.Value.Value));
+                //foreach (var day in value)
+                //    this.parentWorkhoursP.Add(day.Key, new KeyValuePair<int, int>(day.Value.Key, day.Value.Value));
+                parentWorkhoursP = value;
 
             }
         }
+        
         //here I think we need google maps API, and the check of the input is in the ADDRESS
         public Address areaToSearchNanny{ get;set; }
+        
         //another parent details (optional)
         public String firstNameAnotherParent
         {
-            get { return firstNameAnotherParent; }
+            get { return firstNameAnotherParentP; }
             set
             {
                 if (value.Length < 2)
                 {
                     throw new Exception("The firstname is too short!\n");
                 }
-                firstNameAnotherParent = value;
+                firstNameAnotherParentP = value;
             }
         }
+
         public String lastNameAnotherParent
         {
-            get { return lastNameAnotherParent; }
+            get { return lastNameAnotherParentP; }
             set
             {
                 if (value.Length < 2)
                 {
                     throw new Exception("The lastname is too short!\n");
                 }
-                lastNameAnotherParent = value;
+                lastNameAnotherParentP = value;
             }
         }
+
         public String mobileAnotherParent
         {
-            get { return mobile; }
+            get { return mobileAnotherParentP; }
             set
             {
                 //in israel the mobile-phone number length with prefix is about 10 digits
-                if (value.Length < 11 || value.Length > 11)
+                if (value.Length < 10 || value.Length > 10)
                 {
                     throw new Exception("Invalid phone number!\n");
                 }
-                mobileAnotherParent = value;
+                mobileAnotherParentP = value;
             }
         }
+        
         //the parent kids who need nanny
         public List<String> childrenId
         {
-            get { return childrenId; }
+            get { return childrenIdP; }
             set
             {
                 String tmp;
@@ -78,12 +92,16 @@ namespace BE
                     //ID does not contain exactly 9 digits
                     else
                         throw new Exception("Invalid ID! Israeli ID must contain exactly 9 digits!\n");
-                    childrenId.Add(tmp);
+
+                    childrenIdP = value;
+                    
+                    
                 }
             }
         }
-
-        //Functions
+        #endregion
+        
+        #region Functions
         
         public Parent(String myFirstName, String myLastName, String myID, DateTime myDateOfBirth,
             String myEmail, String myLandLinePhone, String myMobile, Address myPersonAddress, Dictionary<DayOfWeek, KeyValuePair<int, int>> myParentWorkhours,
@@ -110,10 +128,11 @@ namespace BE
         {
             //childrenId needs a new tostring
             int tmp = base.ToString().IndexOf("Address:");
-            return String.Format("{0}\n"+firstNameAnotherParent!=null ? "Another parent:\n {1} {2}\nMobile: {3}":""+
-                "Children in the current nanny: {4}\n",
+            return String.Format("{0}"+(firstNameAnotherParent!=null ? "Another parent:\n{1} {2}\nMobile: {3}\n":"")+
+                "Number of children in the current nanny: {4}\n{5}",
                 base.ToString().Substring(0,tmp), firstNameAnotherParent,
-                lastNameAnotherParent, mobileAnotherParent, childrenId.ToString(), base.ToString().Substring(tmp));
+                lastNameAnotherParent, mobileAnotherParent, childrenId.Count, base.ToString().Substring(tmp));
         }
+        #endregion
     }
 }

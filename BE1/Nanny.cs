@@ -4,11 +4,19 @@ using System.Text;
 
 namespace BE
 {
-
     public class Nanny : Person
     {
-        //Feilds
+        #region Fields
+        //Private Fields:
+        private int expYearsP;
+        private int maxChildrenP;
+        private int minAgeP;
+        private int maxAgeP;
+        private decimal costPerHourP;
+        private decimal costPerMonthP;
+        private Dictionary<DayOfWeek, KeyValuePair<int, int>> workhoursP;
 
+        //Public Fields:
         public Gender nannyGender { get; set; }
         public List<Language> nannyLanguage { get; set; }
         public Specialization workField { get; set; }
@@ -17,60 +25,60 @@ namespace BE
         {
             get
             {
-                return expYears;
+                return expYearsP;
             }
             set
             {
-                //years cant be negative
+                //years can't be negative
                 if (value < 0)
                 {
                     throw new Exception("Invalid years of experience!");
                 }
-                expYears = value;
+                expYearsP = value;
             }
         }
-        public List<String> nannySkills { get; set; }//TODO need to conver to enum!
+        public List<String> nannySkills { get; set; }//TODO need to convert to enum!
         public int maxChildren
         {
-            get { return maxChildren; }
+            get { return maxChildrenP; }
             set
             {
                 if (value < 1)
                 {
                     throw new Exception("Invalid max children!\n");
                 }
-                maxChildren = value;
+                maxChildrenP = value;
             }
         }
         public int minAge
         {
-            get { return minAge; }
+            get { return minAgeP; }
             set
             {
                 //the minimum should be consistent to the max age
-                if (value > maxAge || value < 0)
+                if ((value > maxAge) && (maxAge !=0 ) || value < 0)
                 {
                     throw new Exception("Invalid Minimum age!\n");
                 }
-                minAge = value;
+                minAgeP = value;
             }
         }
         public int maxAge
         {
-            get { return maxAge; }
+            get { return maxAgeP; }
             set
             {
                 //no matter because the first check occurs, but for safety
-                if (value < minAge || value < 0)
+                if ((value < minAge) || value < 0)
                 {
                     throw new Exception("Invalid Maximum age!\n");
                 }
-                maxAge = value;
+                maxAgeP = value;
             }
         }
         public decimal costPerHour
         {
-            get { return costPerHour; }
+            get { return costPerHourP; }
             set
             {
 
@@ -78,12 +86,12 @@ namespace BE
                 {
                     throw new Exception("Invalid cost per hour!\n");
                 }
-                costPerHour = value;
+                costPerHourP = value;
             }
         }
         public decimal costPerMonth
         {
-            get { return costPerMonth; }
+            get { return costPerMonthP; }
             set
             {
                 //need to check if the monthly payment is cheaper from the hourly  payment
@@ -91,23 +99,22 @@ namespace BE
                 {
                     throw new Exception("Invalid cost per month!\n");
                 }
-                costPerMonth = value;
+                costPerMonthP = value;
             }
         }
         public Dictionary<DayOfWeek, KeyValuePair<int, int>> workhours
         {
-            get { return workhours; }
+            get { return workhoursP; }
             set
             {
-                foreach (var day in value)
-                    this.workhours.Add(day.Key,new KeyValuePair<int, int>(day.Value.Key, day.Value.Value));
-
-                    
+                //foreach (var day in value)
+                //    this.workhoursP.Add(day.Key, new KeyValuePair<int, int>(day.Value.Key, day.Value.Value));
+                workhoursP = value;
             }
         }//TODO change from int to datetime
-        public bool isVacation { get; set; }//TODO...
+        public bool isVacation { get; set; }//TODO...//////////////////////////////////////////////////////////////////////
         public List<String> recommendations { get; set; }
-        public int[] stars = new int[5] {0, 0, 0, 0, 0};
+        public int[] stars = new int[5] { 0, 0, 0, 0, 0 };
         public float currentStars
         {
             get
@@ -128,26 +135,24 @@ namespace BE
                 {
                     throw new Exception("Invalid number of stars!\n");
                 }
-
                 stars[(int)value]++;
             }
         }
-        public BankAccount nannyAccount{ get; set; }
+        public BankAccount nannyAccount { get; set; }
+        #endregion
 
-        //Functions
-
-        //constructors
+        //Functions:
+        #region Constructors
         public Nanny() : base()
         {
             workhours = new Dictionary<DayOfWeek, KeyValuePair<int, int>>();
         }
         public Nanny(String myFirstName, String myLastName, String myID, DateTime myDateOfBirth,
-            String myEmail, String myLandLinePhone, String myMobile, Address myPersonAddress,Gender myNanyGender, List<Language> myNannyLanguage, Specialization myWorkField,
+            String myEmail, String myLandLinePhone, String myMobile, Address myPersonAddress, Gender myNanyGender, List<Language> myNannyLanguage, Specialization myWorkField,
             bool myIsLift, int myExpYears, List<String> myNannySkills, int myMaxChildren, int myMinAge, int myMaxAge,
             decimal myCostPerHour, decimal myCostPerMonth, Dictionary<DayOfWeek, KeyValuePair<int, int>> myWorkhours,
             bool myVacation, List<String> myRecommendations, BankAccount myNannyAccount)
-            :base( myFirstName, myLastName, myID, myDateOfBirth,
-             myEmail, myLandLinePhone, myMobile, myPersonAddress)
+            : base(myFirstName, myLastName, myID, myDateOfBirth, myEmail, myLandLinePhone, myMobile, myPersonAddress)
         {
             nannyGender = myNanyGender;
             nannyLanguage = myNannyLanguage;
@@ -166,18 +171,13 @@ namespace BE
             recommendations = myRecommendations;
             nannyAccount = myNannyAccount;
         }
-        
-        
+        #endregion
 
-                                
-
-        //to string
-
-        public override string ToString() 
+        //ToString():
+        public override string ToString()
         {
-            return String.Format("{0,3}\nLanguage: {1,3}Occupation: {2,3}\nCost:\nPer month: {4}\nPer hour: {3}",
-                base.ToString(),nannyLanguage,
-                costPerHour,costPerMonth);
+            return String.Format("{0,3}\nLanguage: {1,3}\nCost:\nPer month: {3}\nPer hour: {2}",
+                base.ToString(), nannyLanguage[0].ToString(), costPerHour.ToString(), costPerMonth.ToString());
         }
     }
 }

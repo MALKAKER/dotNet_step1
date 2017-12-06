@@ -4,70 +4,74 @@ using System.Text;
 
 namespace BE
 {
-   
     public class Person
     {
-        //Fields
+        #region Fields
+        //Private Fields:
+        private string firstNameP;
+        private string lastNameP;
+        private DateTime dateOfBirthP;
+        private string emailP;
+        private string landLinePhoneP;
+        private string mobileP;
+        private string IDP;
+
+        //Public Fields:
         public String firstName
         {
-            get { return firstName; }
+            get { return firstNameP; }
             set
             {
                 if (value.Length < 2)
                 {
                     throw new Exception("The firstname is too short!\n");
                 }
-                firstName = value;
+                firstNameP = value;
             }
         }
         public String lastName
         {
-            get { return lastName; }
+            get { return lastNameP; }
             set
             {
                 if (value.Length < 2)
                 {
-                    throw new Exception("The lasttname is too short!\n");
+                    throw new Exception("The last name is too short!\n");
                 }
-                lastName = value;
+                lastNameP = value;
             }
         }
         public String ID
         {
-           
-            get { return ID; }
+            get { return IDP; }
             set
             {
                 //Israeli ID number (we presume Israeli ID numbers cannot begin with 0)
                 if (value.Length == 9)
                 {
                     //Checks if ID is valid Israeli ID
-                    ID = (checkIDValidity(Convert.ToInt32(value))) ? value.ToString() : "0";
+                    IDP = (checkIDValidity(Convert.ToInt32(value))) ? value.ToString() : "0";
                     //Control digit of the ID was incorrect
-                    if (ID == "0")
+                    if (IDP == "0")
                         throw new Exception("Error! ID number is not valid!\n (We currently only sell to Israeli ID holders ;-))\n");
                 }
                 //ID does not contain exactly 9 digits
                 else
                     throw new Exception("Invalid ID! Israeli ID must contain exactly 9 digits!\n");
-                //Checks validity of phone number (presuming only Israeli numbers are valid)
-                if (value.Length != 8 && value.Length != 9)
-                    throw new Exception("Invalid phone number! Israeli phone numbers contain 9 or 10 digits!\n");
             }
-        
-    }
+        }
         public DateTime dateOfBirth
         {
-            get { return dateOfBirth; }
+            get { return dateOfBirthP; }
             set
             {
                 //if the #year is bigger than the current number the person isn't born,
-                //assume the year expressed on 4 digits
+                //assume the year expressed in 4 digits
                 if (value.Year > DateTime.Now.Year)
                 {
                     throw new Exception("Invalid year!\n");
                 }
-                dateOfBirth = value;
+                dateOfBirthP = value;
             }
         }
 
@@ -77,7 +81,7 @@ namespace BE
         {
             get
             {
-                return email;
+                return emailP;
             }
             set
             {
@@ -85,12 +89,12 @@ namespace BE
                 {
                     throw new Exception("Invalid e-mail address!\n");
                 }
-                email = value;
+                emailP = value;
             }
         }
         public String landLinePhone
         {
-            get { return landLinePhone; }
+            get { return landLinePhoneP; }
             set
             {
                 //in israel the phone number length with prefix is about 9 digits
@@ -98,20 +102,20 @@ namespace BE
                 {
                     throw new Exception("Invalid phone number!\n");
                 }
-                landLinePhone = value;
+                landLinePhoneP = value;
             }
         }
         public String mobile
         {
-            get { return mobile; }
+            get { return mobileP; }
             set
             {
                 //in israel the mobile-phone number length with prefix is about 10 digits
-                if (value.Length < 11 || value.Length > 11)
+                if (value.Length < 10 || value.Length > 10)
                 {
                     throw new Exception("Invalid phone number!\n");
                 }
-                mobile = value;
+                mobileP = value;
             }
         }
         //the checking is in address 
@@ -125,6 +129,8 @@ namespace BE
                 return Convert.ToDateTime(age);
             }
         }
+        #endregion
+
         //Methods
         //constructor
         public Person()
@@ -132,7 +138,7 @@ namespace BE
 
         }
         public Person(String myFirstName, String myLastName, String myID, DateTime myDateOfBirth,
-            String myEmail=null, String myLandLinePhone=null, String myMobile=null, Address myPersonAddress=null)
+            String myEmail = null, String myLandLinePhone = null, String myMobile = null, Address myPersonAddress = null)
         {
             firstName = myFirstName;
             lastName = myLastName;
@@ -145,19 +151,21 @@ namespace BE
         }
         public override string ToString()
         {
-            //Israela Israeli
+            //Israela Israeli///////////////////////////////////////////////////
             //025807777
             //0541234567
             //Address:
             //27 Rue Yafo
             //91999 JERUSALEM
             //ISRAEL
-            return String.Format("{0} {1}"+
-                email!=null? "e-mail: {4}\n":""+
-                landLinePhone != null ? "Landline phone: {5}\n" : ""+
-                mobile != null? "Mobile: {6}\n":""+
-                personAddress!=null? "Addresss:\n{7}\n":"\n",
-                firstName, lastName, ID, dateOfBirth, email, landLinePhone, mobile, personAddress.ToString());
+            String address = personAddress == null ? null : personAddress.ToString();
+            return String.Format(
+                "{0} {1}\n" +
+                (email != null ? "e-mail: {4}\n" : "") +
+                (landLinePhone != null ? "Landline phone: {5}\n" : "") +
+                (mobile != null ? "Mobile: {6}\n" : "") +
+                (personAddress != null ? "Address:\n{7}\n" : "\n"),
+                firstName, lastName, ID, dateOfBirth, email, landLinePhone, mobile, address);
         }
 
         //Checks validity of Israeli ID (checks if the control digit is correct for the given ID)
@@ -182,9 +190,5 @@ namespace BE
             else
                 return false;
         }
-
-        
-        
-        
     }
 }
