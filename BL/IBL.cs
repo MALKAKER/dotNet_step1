@@ -14,51 +14,94 @@ namespace BL
     {
         //Nanny functions:
         // ask the lecturer about the blah
+
+        #region NANNY
         void addNanny(Nanny newNanny);
-        Boolean removeNanny(String nannyId);
+        Boolean removeNanny(String nannyId, bool eraseContracts = true);
         void updateNanny(Nanny nannyToUpdate);
+        #endregion
 
 
         //Parent functions:
+
+        #region PARENT
         void addParent(Parent newParent);
         Boolean removeParent(String parentId);
         void updateParent(Parent parentToUpdate);
+        #endregion
 
         //child function
+
+        #region CHILD
         void addChild(Child newChild);
         Boolean removeChild(String childId);
         void updateChild(Child childToUpdate);
+        #endregion
 
         //contract function:
+
+        #region CONTRACT
         void addContract(Contract newContract);
-        Boolean removeContract(int contractId);
+        Boolean removeContract(String contractId);
         void updateContract(Contract contractToUpdate);
+        #endregion
 
         //lists of data
 
+        #region GET ALL
         List<Nanny> getAllNanny();
 
         //
         List<Parent> getAllParents();
-        
+
         //return all the children according to parent
         List<Child> getAllChildren();
 
         //get lists of parents and return their children
         List<Child> getAllChildren(List<Parent> parents);
-        
+
         List<Contract> getAllContracts();
+        #endregion
+
+        //existance
+
+        #region EXISTANCE
+        //checks if the parent exist in the system
+        bool ParentExist(String id);
+        //checks if the Nanny exist in the system
+        bool NannyExist(String id);
+        //checks if the child exist in the system
+        bool ChildExist(String id);
+        //checks if the contract exist in the system
+        bool ContractExist(String Contractid);
+        #endregion
+        
+        //retreive
+
+        #region RETRIEVE SPECIFIC OBJECT
+        //checks if the parent Entity in the system
+        Parent ParentEntity(String id);
+        //checks if the Nanny Entity in the system
+        Nanny NannyEntity(String id);
+        //checks if the child Entity in the system
+        Child ChildEntity(String id);
+        //checks if the contract Entity in the system
+        Contract ContractEntity(String Contractid);
+        #endregion
 
         //Another methods to BL:
-
+        
+        #region ANOTHER METHODS
+        //calculate bill
+        decimal CalculateBill(Boolean choice, Contract contract);
         //matches optional nannies to parent according to specific constrains
-        List<Nanny> initialMatch(Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
+        List<Nanny> initialMatch(Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null);
 
         //(help function to betterMatchNanny) matches optional nannies to parent according to area?
         Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance);
 
         //matches optional nannies to parent according to specific constrains and area
-        List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars);
+        List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null);
 
         //returns children that still dont have nanny
         List<Child> childrenWithNoNanny();
@@ -78,7 +121,7 @@ namespace BL
         Dictionary<int, List<Nanny>> nannyAge(Boolean isSort =false, Func<Nanny, int> sort = null);
 
         //nannies grouping by address
-        Dictionary<int, List<Nanny>> nannyAddress(Address loc, float kilometres, Boolean isSort = false, Func<Nanny, float> sort = null);
+        Dictionary<int, List<Nanny>> nannyAddress(Address loc,  Boolean isSort = false, Func<Nanny, float> sort = null, float? kilometres = null);
 
         //nannies grouping by launguage
         Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null);
@@ -88,6 +131,6 @@ namespace BL
 
         //the distance from the parents location to the nannie's
         Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null);
-        
+#endregion   
     }
 }

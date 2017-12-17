@@ -121,12 +121,12 @@ namespace BE
         //the checking is in address 
         public Address personAddress { get; set; }
         //Returns current age (now minus date of birth)
-        public DateTime currentAge
+        public TimeSpan currentAge
         {
             get
             {
                 TimeSpan age = DateTime.Now - dateOfBirth;
-                return Convert.ToDateTime(age);
+                return age;
             }
         }
         #endregion

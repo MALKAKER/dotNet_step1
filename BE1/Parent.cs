@@ -12,9 +12,17 @@ namespace BE
         private string lastNameAnotherParentP;
         private string mobileAnotherParentP;
         private List<string> childrenIdP;
+        private String passwordP;
         #endregion
 
         #region Attributes
+
+        public String password 
+        {
+            get {return passwordP;}
+            set { passwordP = value; }
+        }
+
         public Dictionary<DayOfWeek, KeyValuePair<int, int>> parentWorkhours
         {
             get { return parentWorkhoursP; }

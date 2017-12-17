@@ -103,21 +103,29 @@ namespace DAL
         #endregion
 
         #region Remove Function
-        //remove 
 
         public bool removeChild(string childId)
         {
             return DataSource.childList.Remove(DataSource.childList.Find(x => x.ID == childId));
         }
 
-        public bool removeContract(int contractId)
+        public bool removeContract(string contractId)
         {
-            return DataSource.contractList.Remove(DataSource.contractList.Find(x => x.contractID == contractId.ToString()));////need to initalize the contract id
+            contractId = String.Format("{0:00000000}", Int32.Parse(contractId));
+            Contract contract = DataSource.contractList.Find(x => x.contractID == contractId.ToString());
+            string idNumber = contract.contractID; 
+            bool isRemove = DataSource.contractList.Remove(contract);
+            if (isRemove)
+            {
+                recycledIDs.Add(idNumber);
+                return isRemove;
+            }
+            return isRemove;
         }
 
         public bool removeNanny(string nannyId)
         {
-            return DataSource.nannyList.Remove(DataSource.nannyList.Find(x => x.ID == nannyId));
+            return DataSource.nannyList.Remove(DataSource.nannyList.Find(x => x.ID.Equals(nannyId)));
         }
 
         public bool removeParent(string parentId)
@@ -173,6 +181,7 @@ namespace DAL
         
         public bool ContractExist(string Contractid)
         {
+            Contractid = String.Format("{0:00000000}", Int32.Parse(Contractid));
             return DataSource.contractList.Exists(x => x.contractID == Contractid);
         }
         #endregion
@@ -196,6 +205,7 @@ namespace DAL
         //returns the contract Entity in the system
         public Contract ContractEntity(String Contractid)
         {
+            Contractid = String.Format("{0:00000000}", Int32.Parse(Contractid));
             return DataSource.contractList.First(x => x.contractID == Contractid);
         }
         #endregion

@@ -15,8 +15,16 @@ namespace BE
         private decimal costPerHourP;
         private decimal costPerMonthP;
         private Dictionary<DayOfWeek, KeyValuePair<int, int>> workhoursP;
+        private String passwordP;
 
         //Public Fields:
+        public String aboutMe = null; // Optional -The nanny tells about herself
+        public String clipAboutMe = null; // Optional - clip about the nanny
+        public String password
+        {
+            get { return passwordP; }
+            set { passwordP = value; }
+        }
         public Gender nannyGender { get; set; }
         public List<Language> nannyLanguage { get; set; }
         public Specialization workField { get; set; }
@@ -37,7 +45,7 @@ namespace BE
                 expYearsP = value;
             }
         }
-        public List<String> nannySkills { get; set; }//TODO need to convert to enum!
+        public List<SKILLS> nannySkills { get; set; }//TODO need to convert to enum!
         public int maxChildren
         {
             get { return maxChildrenP; }
@@ -149,7 +157,7 @@ namespace BE
         }
         public Nanny(String myFirstName, String myLastName, String myID, DateTime myDateOfBirth,
             String myEmail, String myLandLinePhone, String myMobile, Address myPersonAddress, Gender myNanyGender, List<Language> myNannyLanguage, Specialization myWorkField,
-            bool myIsLift, int myExpYears, List<String> myNannySkills, int myMaxChildren, int myMinAge, int myMaxAge,
+            bool myIsLift, int myExpYears, List<SKILLS> myNannySkills, int myMaxChildren, int myMinAge, int myMaxAge,
             decimal myCostPerHour, decimal myCostPerMonth, Dictionary<DayOfWeek, KeyValuePair<int, int>> myWorkhours,
             bool myVacation, List<String> myRecommendations, BankAccount myNannyAccount)
             : base(myFirstName, myLastName, myID, myDateOfBirth, myEmail, myLandLinePhone, myMobile, myPersonAddress)

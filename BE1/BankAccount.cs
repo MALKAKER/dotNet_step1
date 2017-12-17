@@ -75,7 +75,7 @@ namespace BE
         }
         public override string ToString()
         {
-            return string.Format("Bank Name: {0,10}Bank Number: {1,10}Branch Number: {2,10}Branch Address: {3,10}Account Number: {4,10}\n", bankName, (short)bankName, branchNumber, branchAddress.ToString(), accountNumber);
+            return string.Format("Bank Name: {0,10}\tBank Number: {1,10}\tBranch Number: {2,10}\tBranch Address: {3,10}\tAccount Number: {4,10}\n", bankName, (short)bankName, branchNumber, branchAddress.ToString(), accountNumber);
         }
         #endregion
     }

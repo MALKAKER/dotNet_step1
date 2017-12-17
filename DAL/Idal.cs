@@ -12,41 +12,45 @@ namespace DAL
     {
         //Nanny functions:
         // ask the lecturer about the blah
+        #region NANNY
         void addNanny(Nanny newNanny);
         Boolean removeNanny(String nannyId);
         void updateNanny(Nanny nannyToUpdate);
-
+#endregion
 
         //Parent functions:
+        #region PARENT
         void addParent(Parent newParent);
         Boolean removeParent(String parentId);
         void updateParent(Parent parentToUpdate);
+        #endregion
 
         //child function
+        #region CHILD 
         void addChild(Child newChild);
         Boolean removeChild(String childId);
         void updateChild(Child childToUpdate);
+#endregion
 
         //contract function:
+        #region CONTRACT
         void addContract(Contract newContract);
-        Boolean removeContract(int contractId);
+        Boolean removeContract(string contractId);
         void updateContract(Contract contractToUpdate);
+        #endregion
 
         //lists of data
-
+        #region GETT ALL
         List<Nanny> getAllNanny();
-        //
         List<Parent> getAllParents();
-        //________________________________
         //return all the children according to parent
         List<Child> getAllChildren();
         //get lists of parents and return their children
         List<Child> getAllChildren(List<Parent> parents); 
-        //________________________________
         List<Contract> getAllContracts();
+        #endregion
 
-        //existance:
-
+        #region EXISTANCE
         //checks if the parent exist in the system
         bool ParentExist(String id);
         //checks if the Nanny exist in the system
@@ -55,9 +59,9 @@ namespace DAL
         bool ChildExist(String id);
         //checks if the contract exist in the system
         bool ContractExist(String Contractid);
+        #endregion
 
-        //retrieve specific object
-
+        #region RETRIEVE SPECIFIC OBJECT
         //checks if the parent Entity in the system
         Parent ParentEntity(String id);
         //checks if the Nanny Entity in the system
@@ -66,6 +70,6 @@ namespace DAL
         Child ChildEntity(String id);
         //checks if the contract Entity in the system
         Contract ContractEntity(String Contractid);
-
+        #endregion
     }
 }

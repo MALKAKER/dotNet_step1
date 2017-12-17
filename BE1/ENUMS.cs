@@ -10,6 +10,8 @@ namespace BE
     public enum Gender {male, female };
     //what kind of employee 
     public enum Specialization {Nanny, Babysitter };
+    //nannies skills
+    public enum SKILLS { Special_Needs, Warm, Orgenized, Creative, Patient, Calm, Tidy, Happy}
     //the language the employee speaks
     public enum Language {Hebrew, English, Yiddish, Arabic, French };//(add more languages)
     //important information about the child

@@ -1,40 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BE;
 using GoogleMapsApi;
-using GoogleMapsApi.Entities.Common;
 using GoogleMapsApi.Entities.Directions.Request;
 using GoogleMapsApi.Entities.Directions.Response;
-using GoogleMapsApi.Entities.Elevation.Request;
-using GoogleMapsApi.Entities.Geocoding.Request;
-using GoogleMapsApi.Entities.Geocoding.Response;
-using GoogleMapsApi.StaticMaps;
-using GoogleMapsApi.StaticMaps.Entities;
-using System.Reflection;
+
 
 namespace BL
 {
+    #region TIME SPAN EXTANDSION
+    /// <summary>
+    /// TimeSpanExtensions - extands the timeSpan functions
+    /// </summary>
+
+    public static class TimeSpanExtensions
+    {
+        //return years
+        public static int GetYears(this TimeSpan timespan) => (int)(timespan.Days / 365.2425);
+
+        //return months
+        public static int GetMonths(this TimeSpan timespan) => (int)(timespan.Days / 30.436875);
+    }
+    #endregion
+
     class BL_imp : IBL
     {
         //defines a component of dal layer
         DAL.Idal dal;
+
+        #region INIT
+        /// <summary>
+        /// dal assigning
+        /// </summary>
         public void Cass_BlAdapter()
         {
-            
             dal = DAL.DalFactory.getReference();
         }
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public BL_imp()
+        {
+            Cass_BlAdapter();
+        }
+        #endregion
 
+        #region ADD
         /// <summary>
         /// addChild - adds child into list
         /// </summary>
-        /// <param name="newChild"></param>
-        
+        /// <param name="newChild">a new child in the DS</param>
+
         public void addChild(Child newChild)
         {
-            if (!dal.ChildExist(newChild.ID))
+            //Check if the child exists in the DS
+            if (!ChildExist(newChild.ID))
             {
                 dal.addChild(newChild);
             }
@@ -47,50 +68,49 @@ namespace BL
         /// <summary>
         /// addContract - Adds constract into list
         /// </summary>
-        /// <param name="newContract"></param>
+        /// <param name="newContract">New contract to the records</param>
 
         public void addContract(Contract newContract)
         {
-            DateTime age = (dal.ChildEntity(newContract.ChildId)).currentAge;
-            if (((dal.getAllContracts()).FindAll(x => x.NannyId == newContract.NannyId)).Count < ((dal.getAllNanny()).Find(x => x.ID == newContract.NannyId)).maxChildren)
+            //child's current age
+            TimeSpan age = (ChildEntity(newContract.ChildId)).currentAge;
+            
+            //checks if all entities in the contract exist
+            if (!NannyExist(newContract.NannyId) || !ParentExist(newContract.ParentId) || !ParentEntity(newContract.ParentId).childrenId.Contains(newContract.ChildId))
+            {
+                throw new Exception("ERROR: One or more stakeholder don't exist in the data base!\n");               
+            }
+            //Checks if the nanny have place to another child
+            else if ((((dal.getAllContracts()).FindAll(x => x.NannyId == newContract.NannyId)).Count == ((dal.getAllNanny()).Find(x => x.ID == newContract.NannyId)).maxChildren))
             {
                 throw new Exception("ERROR: Nanny is busy!\n");
             }
-            else if(dal.NannyExist(newContract.NannyId) && dal.ParentExist(newContract.ParentId) && dal.ParentEntity(newContract.ParentId).childrenId.Contains(newContract.ChildId))
-            {
-                dal.addContract(newContract);
-            }
-            else if (age.Year == 0 && age.Month <= 3)
+            //Checks if the infinity is old anogth to be in nannies home
+            else if (age.GetYears() == 0 && age.GetMonths() <= 3)
             {
                 throw new Exception("ERROR: Babies under 3 months can't register to nanny.\n");
-            } 
-            else
-            {
-                throw new Exception("ERROR: One or more stakeholder don't exist in the data base!\n");
             }
+            dal.addContract(newContract);
         }
 
         /// <summary>
         /// addNanny - adds nanny into list
         /// </summary>
-        /// <param name="newNanny"></param>
+        /// <param name="newNanny">New nanny to the DS</param>
 
         public void addNanny(Nanny newNanny)
         {
-
-            DateTime age = newNanny.currentAge;
-            if (!dal.NannyExist(newNanny.ID))
-                dal.addNanny(newNanny);
-            else
-                throw new Exception("ERROR: Nanny is already exit!\n");
+            //nannies age
+            TimeSpan age = newNanny.currentAge;
+            // babysiter can be younger
             switch (newNanny.workField)
             {
                 case Specialization.Nanny:
-                    if (age.Year < 18)
+                    if (age.GetYears() < 18)
                         throw new Exception("You are too young to be a nanny.\n");
                     break;
                 case Specialization.Babysitter:
-                    if (age.Year < 14)
+                    if (age.GetYears() < 14)
                     {
                         throw new Exception("You are too young to be a babysitter.\n");
                     }
@@ -98,17 +118,21 @@ namespace BL
                 default:
                     break;
             }
-            dal.addNanny(newNanny);     
+            if (!NannyExist(newNanny.ID))
+                dal.addNanny(newNanny);
+            else
+                throw new Exception("ERROR: Nanny is already exit!\n");
         }
 
         /// <summary>
         /// addParent - Adds parent into list
         /// </summary>
-        /// <param name="newParent"></param>
+        /// <param name="newParent">New parent to the DS</param>
 
         public void addParent(Parent newParent)
-        {
-            if (!dal.ParentExist(newParent.ID))
+        {   
+            //Checks if parent exist
+            if (!ParentExist(newParent.ID))
             {
                 dal.addParent(newParent);
             }
@@ -117,80 +141,13 @@ namespace BL
                 throw new Exception("ERROR: Parent is already exists!\n");
             }
         }
+        #endregion
 
-        /// <summary>
-        /// betterMatchNanny - returns all the nannies that fit to all terms including the address
-        /// </summary>
-        /// <param name="area"></param>
-        /// <param name="parent"></param>
-        /// <param name="gender"></param>
-        /// <param name="skill"></param>
-        /// <param name="languages"></param>
-        /// <param name="minExpYears"></param>
-        /// <param name="spec"></param>
-        /// <param name="maxCostPerHour"></param>
-        /// <param name="liftInBuilding"></param>
-        /// <param name="tamatHoliday"></param>
-        /// <param name="minStars"></param>
-        /// <returns></returns>
-
-        public List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars)
-        {
-            //Get all the nannies that fit to the parent's terms
-            List<Nanny> nanniesBasic = initialMatch(parent, gender, skill, languages, minExpYears, spec, maxCostPerHour, liftInBuilding, tamatHoliday, minStars);
-            //Add location constrain to the selection
-            List<Nanny> nanniesAddress = initialMatch(parent, gender, skill, languages, minExpYears, spec, maxCostPerHour, liftInBuilding, tamatHoliday, minStars);
-            //Pick the results that apear at both lists
-            var mergeNannies = from nannyBasic in nanniesBasic
-                               from nannyAddress in nanniesAddress
-                               where nannyBasic.ID == nannyAddress.ID 
-                               orderby nannyAddress.lastName, nannyAddress.firstName
-                               select nannyAddress;
-            //Returns nannie's array 
-            return mergeNannies.ToList();
-        }
-
-        /// <summary>
-        /// calculate distance between 2 addresses
-        /// </summary>
-        /// <param name="loc"></param>
-        /// <param name="dest"></param>
-        /// <returns></returns>
-
-        public int calculateDistance(Address loc, Address dest)
-        {
-            var drivingDirectionRequest = new DirectionsRequest
-            {
-                TravelMode = TravelMode.Walking,
-                Origin = loc.ToString(),
-                Destination = dest.ToString()
-            };
-            DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
-            Route route = directions.Routes.First();
-            Leg leg = route.Legs.First();
-            return leg.Distance.Value;
-        }
-        
-        /// <summary>
-        /// grouping by distance (todo- think how to group by another address)
-        /// </summary>
-        /// <param name="isSort"></param>
-        /// <param name="someSort"></param>
-        /// <returns></returns>
-
-        public Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null)
-        {
-            sort = sort == null ? ((Contract c) => c.totalHours) : sort;
-            var contracts = (from contract in dal.getAllContracts()
-                            orderby sort, contract.ChildId
-                            group contract by calculateDistance(dal.ParentEntity(contract.ParentId).areaToSearchNanny, dal.NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList());//i didnt consider the optional location
-            return contracts;
-        }
-
+        #region GET ALL
         /// <summary>
         /// getAllChildren - Returns all the children
         /// </summary>
-        /// <returns></returns>
+        /// <returns>children list</returns>
 
         public List<Child> getAllChildren()
         {
@@ -206,7 +163,7 @@ namespace BL
         /// getAllChildren(List<Parent> parents) - return all the children 
         /// belongs to specific parent
         /// </summary>
-        /// <param name="parents"></param>
+        /// <param name="parents">children belongs to specific parents</param>
         /// <returns></returns>
 
         public List<Child> getAllChildren(List<Parent> parents)
@@ -222,7 +179,7 @@ namespace BL
         /// <summary>
         /// getAllContracts - return all contacts
         /// </summary>
-        /// <returns></returns>
+        /// <returns>contracts list</returns>
 
         public List<Contract> getAllContracts()
         {
@@ -237,7 +194,7 @@ namespace BL
         /// <summary>
         /// getAllNanny - return all nanny
         /// </summary>
-        /// <returns></returns>
+        /// <returns>nannies list</returns>
 
         public List<Nanny> getAllNanny()
         {
@@ -252,7 +209,7 @@ namespace BL
         /// <summary>
         /// getAllParents - return all parents
         /// </summary>
-        /// <returns></returns>
+        /// <returns>parents list</returns>
 
         public List<Parent> getAllParents()
         {
@@ -263,77 +220,9 @@ namespace BL
             }
             throw new Exception("ERROR: No parents!\n");
         }
+        #endregion
 
-        /// <summary>
-        /// group by address
-        /// </summary>
-        /// <param name="isSort">delegate parameter</param>
-        /// <param name="someSort"></param>
-        /// <returns></returns>
-
-        public Dictionary<int, List<Nanny>> nannyAddress(Address loc, float kilometres, bool isSort = false, Func<Nanny, float> sort = null)
-        {
-            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
-            Dictionary<int, int> distances = new Dictionary<int, int>();
-            //!
-            foreach (var nanny in dal.getAllNanny())
-            {
-                var drivingDirectionRequest = new DirectionsRequest
-                {
-                    TravelMode = TravelMode.Walking,
-                    Origin = loc.ToString(),
-                    Destination = nanny.personAddress.ToString()
-                };
-                DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
-                Route route = directions.Routes.First();
-                Leg leg = route.Legs.First();
-                distances.Add(Int32.Parse(nanny.ID), leg.Distance.Value);
-            }
-            var nanniesByDistance =
-                (from nanny in dal.getAllNanny()
-                from d in distances
-                where d.Key == Int32.Parse(nanny.ID) && d.Value <= kilometres
-                orderby sort , nanny.firstName, nanny.lastName
-                group nanny by d.Value into temp
-                select new { lang = temp.Key, nan = temp}).ToDictionary(k => k.lang, v => v.nan.ToList());
-            
-            return nanniesByDistance;
-            ////////////////////////////Check if this function works!!!!!!!!!!!!!!!!
-        }
-
-        /// <summary>
-        /// group by minimum age
-        /// </summary>
-        /// <param name="isSort"></param>
-        /// <param name="someSort"></param>
-        /// <returns></returns>/!?
-
-        public Dictionary<int, List<Nanny>> nannyAge(bool isSort = false, Func<Nanny, int> sort = null)
-        {
-            
-            if (sort == null)
-            {
-                sort = (Nanny n) => n.maxAge;
-            }
-            var nannies = (from nanny in dal.getAllNanny()
-                          orderby sort, nanny.lastName, nanny.firstName
-                          group nanny by nanny.minAge into g
-                          select new { age = g.Key, nan = g}).ToDictionary(k => k.age, v => v.nan.ToList());
-            
-            return nannies;//////we didnt use sort 
-        }
-
-        /// <summary>
-        /// numberOfContracts - counts the number of contracts fullfil the specific terms
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-
-        public int numberOfContracts(Predicate<Contract> condition)
-        {
-            return specificContracts(condition).Count;
-        }
-
+        #region REMOVE
         /// <summary>
         /// removeChild - remove child from the array and from the contract 
         /// the child sign in
@@ -345,12 +234,19 @@ namespace BL
 
         public bool removeChild(string childId)
         {
-            if (dal.ChildExist(childId) )
+            if (ChildExist(childId))
             {
-                Contract c = dal.getAllContracts().FirstOrDefault(x => x.ChildId == childId);
-                dal.removeContract(Int32.Parse(c.contractID));///ask malka
+                //finds the contracts the child signed in
+                var contracts = from contract in getAllContracts()
+                                where contract.ChildId == childId
+                                select contract.contractID;
+                //delete all contracts the child relates to
+                foreach (var cont in contracts.ToList())//Remove all contracts associated with the nanny
+                {
+                    removeContract(cont);
+                }
                 dal.removeChild(childId);
-                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT CHILD AND REMOVE THEM
+                
             }
             else
             {
@@ -362,10 +258,10 @@ namespace BL
         /// <summary>
         /// removeContract - remove specific contract
         /// </summary>
-        /// <param name="contractId"></param>
+        /// <param name="contractId">bool if the the contract is removeable</param>
         /// <returns></returns>
 
-        public bool removeContract(int contractId)
+        public bool removeContract(String contractId)
         {
             if (dal.ContractExist(contractId.ToString()))
             {
@@ -381,17 +277,29 @@ namespace BL
         /// <summary>
         /// removeNanny - remove nanny and her contract
         /// </summary>
-        /// <param name="nannyId"></param>
+        /// <param name="nannyId">bool if the nanny is removeable</param>
         /// <returns></returns>
 
-        public bool removeNanny(string nannyId)
+        public bool removeNanny(string nannyId, bool eraseContracts = true)
         {
-            if (dal.NannyExist(nannyId))
+            //If nanny exists
+            if (NannyExist(nannyId))
             {
-                Contract c = dal.getAllContracts().FirstOrDefault(x => x.NannyId == nannyId);
-                dal.removeContract(Int32.Parse(c.contractID));///ask malka
+                //If we need to erase all associated contracts
+                if (eraseContracts)
+                {
+                    //erase the contracts relate to the current nanny
+                    var contracts = from contract in getAllContracts()
+                                    where contract.NannyId == nannyId
+                                    select contract.contractID;
+                    foreach (var cont in contracts.ToList())//Remove all contracts associated with the nanny
+                    {
+                        removeContract(cont);
+                    }
+                }
+                //remove nanny
                 dal.removeNanny(nannyId);
-                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT nanny AND REMOVE THEM
+                
             }
             else
             {
@@ -409,13 +317,25 @@ namespace BL
 
         public bool removeParent(string parentId)
         {
-            if (dal.ParentExist(parentId))
-            {
-                Contract c = dal.getAllContracts().FirstOrDefault(x => x.ParentId == parentId);
-                dal.removeContract(Int32.Parse(c.contractID));///ask malka
-                dal.getAllChildren().RemoveAll(x => x.parentId == parentId);
+            if (ParentExist(parentId))
+            {   
+                //contracts relate to the parent
+                var contracts = from contract in getAllContracts()
+                                where contract.ParentId == parentId
+                                select contract.contractID;
+                //Remove all contracts associated with the nanny
+                foreach (var cont in contracts.ToList())
+                {
+                    removeContract(cont);
+                }
+                //List<Child> rChild = dal.getAllChildren().FindAll(x => x.parentId == parentId);
+                //Remove all contracts associated with the nanny
+                foreach (String c in ParentEntity(parentId).childrenId)
+                {
+                    removeChild(c);
+                }
                 dal.removeParent(parentId);
-                //TODO -> CHECK ANOTHER FIELD WITH THE CURRENT parent AND REMOVE THEM
+               
             }
             else
             {
@@ -423,47 +343,9 @@ namespace BL
             }
             return true;
         }
+        #endregion
 
-        /// <summary>
-        /// specificContracts - returns contracts that fits to specific parameters
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-
-        public List<Contract> specificContracts(Predicate<Contract> condition = null)
-        {
-            List<Contract> result;
-            if (condition == null)
-            {
-                result = dal.getAllContracts();
-            }
-            else
-            {
-                result = dal.getAllContracts().FindAll(condition);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// tamatVacation - This function returns the nannies which
-        /// have a vacation like the tamat vacation
-        /// </summary>
-        /// <returns></returns>
-
-        public List<Nanny> tamatVacation()
-        {
-            List<Nanny> nannies = new List<Nanny>();
-            var tmpNannies = from Nanny in dal.getAllNanny()
-                                  orderby Nanny.costPerMonth
-                                  where Nanny.isVacation == true
-                                  select Nanny;
-            foreach (var item in tmpNannies)
-            {
-                nannies.Add(item);
-            }
-            return nannies;
-        }
-
+        #region UPDATE
         /// <summary>
         /// updateChild - updating child details
         /// </summary>
@@ -471,7 +353,7 @@ namespace BL
 
         public void updateChild(Child childToUpdate)
         {
-            if (dal.ChildExist(childToUpdate.ID))
+            if (ChildExist(childToUpdate.ID))
             {
                 dal.updateChild(childToUpdate);
             }
@@ -488,7 +370,7 @@ namespace BL
 
         public void updateContract(Contract contractToUpdate)
         {
-            if (dal.ContractExist(contractToUpdate.contractID))
+            if (ContractExist(contractToUpdate.contractID))
             {
                 dal.updateContract(contractToUpdate);
             }
@@ -505,7 +387,7 @@ namespace BL
 
         public void updateNanny(Nanny nannyToUpdate)
         {
-            if (dal.NannyExist(nannyToUpdate.ID))
+            if (NannyExist(nannyToUpdate.ID))
             {
                 dal.updateNanny(nannyToUpdate);
             }
@@ -522,7 +404,7 @@ namespace BL
 
         public void updateParent(Parent parentToUpdate)
         {
-            if (dal.NannyExist(parentToUpdate.ID))
+            if (NannyExist(parentToUpdate.ID))
             {
                 dal.updateParent(parentToUpdate);
             }
@@ -530,6 +412,24 @@ namespace BL
             {
                 throw new Exception("ERROR: Parent doesn't exist in the system.");
             }
+        }
+        #endregion
+
+        #region GROUPING
+        /// <summary>
+        /// grouping by distance (todo- think how to group by another address)
+        /// </summary>
+        /// <param name="isSort"></param>
+        /// <param name="someSort"></param>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null)
+        {
+            sort = sort == null ? ((Contract c) => c.totalHours) : sort;
+            var contracts = (from contract in dal.getAllContracts()
+                            orderby sort, contract.ChildId
+                            group contract by calculateDistance(ParentEntity(contract.ParentId).areaToSearchNanny, NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList());//i didnt consider the optional location
+            return contracts;
         }
 
         /// <summary>
@@ -539,14 +439,14 @@ namespace BL
         /// <param name="someSort"></param>
         /// <returns></returns>
 
-        public Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null)
+        public Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny, int> sort = null)
         {
             //grouping by the first language because the list is problematic
             sort = sort == null ? ((Nanny n) => n.expYears) : sort;
             var nannies = (from nanny in dal.getAllNanny()
                            orderby sort, nanny.lastName, nanny.firstName
                            group nanny by nanny.nannyLanguage[0] into tmp//!!
-                           select new {lang = tmp.Key, nan =tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+                           select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
             return nannies;
         }
 
@@ -568,13 +468,291 @@ namespace BL
         }
 
         /// <summary>
+        /// group by address
+        /// </summary>
+        /// <param name="isSort">delegate parameter</param>
+        /// <param name="someSort"></param>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Nanny>> nannyAddress(Address loc, bool isSort = false, Func<Nanny, float> sort = null, float? kilometres = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+            Dictionary<int, int> distances = new Dictionary<int, int>();
+            //!
+            foreach (var nanny in dal.getAllNanny())
+            {
+                var drivingDirectionRequest = new DirectionsRequest
+                {
+                    TravelMode = TravelMode.Walking,
+                    Origin = loc.ToString(),
+                    Destination = nanny.personAddress.ToString()
+                };
+                DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+                Route route = directions.Routes.First();
+                Leg leg = route.Legs.First();
+                distances.Add(Int32.Parse(nanny.ID), leg.Distance.Value);
+            }
+            //if the func get a parameter kilometers the results will be in the desired range
+            var nanniesByDistance = kilometres == null?
+                (from nanny in dal.getAllNanny()
+                from d in distances
+                where d.Key == Int32.Parse(nanny.ID) 
+                orderby sort , nanny.firstName, nanny.lastName
+                group nanny by d.Value into temp
+                select new { lang = temp.Key, nan = temp}).ToDictionary(k => k.lang, v => v.nan.ToList()):
+                (from nanny in dal.getAllNanny()
+                 from d in distances
+                 where d.Key == Int32.Parse(nanny.ID) && d.Value <= kilometres
+                 orderby sort, nanny.firstName, nanny.lastName
+                 group nanny by d.Value into temp
+                 select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+            
+            return nanniesByDistance;
+            ////////////////////////////Check if this function works!!!!!!!!!!!!!!!!
+        }
+
+        /// <summary>
+        /// group by minimum age
+        /// </summary>
+        /// <param name="isSort"></param>
+        /// <param name="someSort"></param>
+        /// <returns></returns>/!?
+        public Dictionary<int, List<Nanny>> nannyAge(bool isSort = false, Func<Nanny, int> sort = null)
+        {
+
+            if (sort == null)
+            {
+                sort = (Nanny n) => n.maxAge;
+            }
+            var nannies = (from nanny in dal.getAllNanny()
+                           orderby sort, nanny.lastName, nanny.firstName
+                           group nanny by nanny.minAge into g
+                           select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList());
+
+            return nannies;//////we didnt use sort 
+        }
+
+        #endregion
+
+        #region MATCH
+
+        /// <summary>
+        /// betterMatchNanny - returns all the nannies that fit to all terms including the address
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="parent"></param>
+        /// <param name="gender"></param>
+        /// <param name="skill"></param>
+        /// <param name="languages"></param>
+        /// <param name="minExpYears"></param>
+        /// <param name="spec"></param>
+        /// <param name="maxCostPerHour"></param>
+        /// <param name="liftInBuilding"></param>
+        /// <param name="tamatHoliday"></param>
+        /// <param name="minStars"></param>
+        /// <returns></returns>
+        
+        public List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
+        {
+            //Get all the nannies that fit to the parent's terms
+            List<Nanny> nanniesBasic = initialMatch(parent, gender, skill, languages, minExpYears, spec, maxCostPerHour, liftInBuilding, tamatHoliday, minStars, childId);
+            //Add location constrain to the selection
+            List<Nanny> nanniesAddress = null;//nanniesAddress(area, );
+            //Pick the results that apear at both lists
+            var mergeNannies = from nannyBasic in nanniesBasic
+                               from nannyAddress in nanniesAddress
+                               where nannyBasic.ID == nannyAddress.ID
+                               orderby nannyAddress.lastName, nannyAddress.firstName
+                               select nannyAddress;
+            //Returns nannie's array 
+            return mergeNannies.ToList();
+        }
+
+        /// <summary>
+        /// initialMatch - Returns the nannies who are fit to specific terms
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="gender"></param>
+        /// <param name="skill"></param>
+        /// <param name="languages"></param>
+        /// <param name="minExpYears"></param>
+        /// <param name="spec"></param>
+        /// <param name="maxCostPerHour"></param>
+        /// <param name="liftInBuilding"></param>
+        /// <param name="tamatHoliday"></param>
+        /// <param name="minStars"></param>
+        /// <returns></returns>
+        
+        //help function to initial match
+        private bool checkHours(Nanny nanny, Parent parent)
+        {
+            //The function checks fittness between the nanny work-hours anfd the parent recuirement
+            foreach (var day in parent.parentWorkhours)//Check if nanny work in all the hours the parents require
+            {
+                if (nanny.workhours.ContainsKey(day.Key))
+                    //Check nanny doesn't start later of finish earlier than the parents need.
+                    if (nanny.workhours[day.Key].Key > day.Value.Key || nanny.workhours[day.Key].Value < day.Value.Value)
+                    {
+                        return false;
+                    }
+                else
+                    return false;
+
+            }
+            return true;
+        }
+
+        public List<Nanny> initialMatch(Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
+        {
+            //general constraints
+            var nannies = (from nanny in getAllNanny()
+                          where skill.All(nanny.nannySkills.Contains) && nanny.nannyGender.Equals(gender) && languages.Any(nanny.nannyLanguage.Contains) && nanny.expYears >= minExpYears
+                          && nanny.workField.Equals(spec) && nanny.costPerHour < maxCostPerHour && (nanny.isVacation || !tamatHoliday) && nanny.currentStars >= minStars
+                          && (nanny.isLift || !liftInBuilding) && checkHours(nanny, parent)
+                          select nanny).ToList();
+            //if the existance of the lift is important to the parent
+            //if (liftInBuilding)
+            //{
+            //    nannies = nannies.FindAll(x => x.isLift);
+            //}
+
+            //if the search is about a specific child
+            if (childId != null)
+            {
+                float age = (ChildEntity(childId).currentAge.GetMonths() / 12 + ChildEntity(childId).currentAge.GetYears());
+                nannies = nannies.FindAll(x => (x.minAge <= age) && (x.maxAge >= age) );
+            }
+            return nannies;
+        }
+
+        /// <summary>
+        /// nanniesNearby - returns the nannies are located in a specific radius near the parent's location
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="maxDistance"></param>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance)
+        {
+            Address addressToSearchFrom = new Address();
+            //If parent did not define an address from which to search, use their home address.
+            if (addressToSearchFrom == null)
+                addressToSearchFrom = parent.personAddress;
+            else
+                addressToSearchFrom = parent.areaToSearchNanny;
+            //returns the nannies near the parent area, grouping by distance and sorted according to current stars
+            return nannyAddress(addressToSearchFrom,  true, (Nanny n) => n.currentStars ,maxDistance);
+        }
+        
+        #endregion
+
+        #region CALCULATE DISTANCE
+        /// <summary>
+        /// calculate distance between 2 addresses
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
+        public int calculateDistance(Address loc, Address dest)
+        {
+            var drivingDirectionRequest = new DirectionsRequest
+            {
+                TravelMode = TravelMode.Walking,
+                Origin = loc.ToString(),
+                Destination = dest.ToString()
+            };
+            DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+            Route route = directions.Routes.First();
+            Leg leg = route.Legs.First();
+            return leg.Distance.Value;
+        }
+        #endregion
+
+        #region CONTRACTS
+        /// <summary>
+        /// numberOfContracts - counts the number of contracts fullfil the specific terms
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+
+        public int numberOfContracts(Predicate<Contract> condition)
+        {
+            return specificContracts(condition).Count;
+        }
+
+        /// <summary>
+        /// specificContracts - returns contracts that fits to specific parameters
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+
+        public List<Contract> specificContracts(Predicate<Contract> condition = null)
+        {
+            List<Contract> result;
+            if (condition == null)
+            {
+                result = dal.getAllContracts();
+            }
+            else
+            {
+                result = dal.getAllContracts().FindAll(condition);
+            }
+            return result;
+        }
+        #endregion
+
+        #region CHECK VACATION TYPE
+        /// <summary>
+        /// tamatVacation - This function returns the nannies which
+        /// have a vacation like the tamat vacation
+        /// </summary>
+        /// <returns></returns>
+
+        public List<Nanny> tamatVacation()
+        {
+            List<Nanny> nannies = new List<Nanny>();
+            var tmpNannies = from Nanny in dal.getAllNanny()
+                             orderby Nanny.costPerMonth
+                             where Nanny.isVacation == true
+                             select Nanny;
+            foreach (var item in tmpNannies)
+            {
+                nannies.Add(item);
+            }
+            return nannies;
+        }
+        #endregion
+
+        #region CHILDREN WITH NO NANNY
+        /// <summary>
+        /// childrenWithNoNanny - Returns list of all the children who do not yet have a nanny
+        /// (i.e.are not included in a signed contract)
+        /// </summary>
+        /// <returns></returns>
+
+        public List<Child> childrenWithNoNanny()
+        {
+            List<Child> children = dal.getAllChildren();//get all children
+            var childNoNanny = from child in dal.getAllChildren()
+                               from contract in dal.getAllContracts()
+                               where child.ID == contract.ChildId//put child who has contract into list of children to remove from list of all children
+                               select child;
+            foreach (var child in childNoNanny.ToList())//remove all children for whom a signed contract has been found.
+            {
+                children.Remove(child);
+            }
+            return children;
+        }
+        #endregion
+
+        #region BILL COST
+        /// <summary>
         /// calculatets the nannies wage
         /// </summary>
         /// <param name="choice"></param>
         /// <param name="contract"></param>
         /// <returns></returns>
-
-        private decimal CalculateBill(Boolean choice, Contract contract)
+        public decimal CalculateBill(Boolean choice, Contract contract)
         {
             decimal wage = 0;
             switch (choice)
@@ -625,79 +803,9 @@ namespace BL
                 return contract.monthlyWage;
             }
         }
+#endregion
 
-        /// <summary>
-        /// checks if the first element is bigger (via stars->reffers to nanny) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByStars(Nanny first, Nanny second)
-        {
-            return first.currentStars > second.currentStars? true : false;
-        }
-
-        /// <summary>
-        /// checks if the first element is bigger (via full name) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByName(Person first, Person second)
-        {
-            return ((first.lastName).CompareTo(second.lastName) >= 0 && (first.firstName).CompareTo(second.firstName) > 0) ? true : false;
-        }
-
-        /// <summary>
-        /// checks if the first element is bigger (via minage) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByMinAge(Nanny first, Nanny second)
-        {
-            return first.minAge > second.minAge ? true : false;
-        }
-
-        /// <summary>
-        /// checks if the first element is bigger (via max age) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByMaxAge(Nanny first, Nanny second)
-        {
-            return first.maxAge > second.maxAge ? true : false;
-        }
-
-        /// <summary>
-        /// checks if the first element is bigger (via price per hour) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByPricePerHour(Nanny first, Nanny second)
-        {
-            return first.costPerHour < second.costPerHour ? true : false;
-        }
-
-        /// <summary>
-        /// checks if the first element is bigger (via monthly price) than the second
-        /// </summary>
-        /// <param name="first">the object we check</param>
-        /// <param name="second">the object we used to compare</param>
-        /// <returns></returns>
-
-        public bool sortByPricePerMonth(Nanny first, Nanny second)
-        {
-            return first.costPerMonth < second.costPerMonth ? true : false;
-        }
-
+        #region FITTNESS
         /// <summary>
         /// ContractParentFittnes - check if the contract fitts to a specific term
         /// </summary>
@@ -769,116 +877,127 @@ namespace BL
         {
             return contract.totalHours >= hours;
         }
+        #endregion
 
+        #region SORTING
         /// <summary>
-        /// initialMatch - Returns the nannies who are fit to specific terms
+        /// checks if the first element is bigger (via stars->reffers to nanny) than the second
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="gender"></param>
-        /// <param name="skill"></param>
-        /// <param name="languages"></param>
-        /// <param name="minExpYears"></param>
-        /// <param name="spec"></param>
-        /// <param name="maxCostPerHour"></param>
-        /// <param name="liftInBuilding"></param>
-        /// <param name="tamatHoliday"></param>
-        /// <param name="minStars"></param>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
         /// <returns></returns>
 
-        public List<Nanny> initialMatch(Parent parent, Gender gender, String skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars)
+        public bool sortByStars(Nanny first, Nanny second)
         {
-            bool temp;
-            List<Nanny> nannyList = new List<Nanny>();
-            List<Nanny> tempNannyList = new List<Nanny>();
-            if (tamatHoliday)//If the parent wants a nanny who takes vacations according to tamat
-                tempNannyList = tamatVacation();//returns nannies who keep tamat holidays
-            else
-                tempNannyList = dal.getAllNanny();
-            var children = from child in dal.getAllChildren()
-                        where child.parentId == parent.ID//all children of this parent
-                        select child;
-            foreach (var child in children)
-            {
-                var nannies = from nanny in tempNannyList
-                              where child.currentAge.Month >= nanny.minAge && child.currentAge.Month <= nanny.maxAge//nanny takes children of that age
-                              where nanny.workField == spec && nanny.nannyGender == gender && (nanny.nannySkills).Contains(skill) &&
-                                    minExpYears == nanny.expYears && maxCostPerHour >= nanny.costPerHour && nanny.currentStars >= minStars
-                              orderby nanny.lastName, nanny.firstName/////////Change to sort by distance?
-                              select nanny;
-                ///////////////////Want to throw this exception????
-                if (!nannies.Any())//If not nannies meet the requirements
-                    throw new Exception("No nannies match the parents' requirements for this child!\n");
-                foreach (var nanny in nannies)
-                {
-                    if (liftInBuilding && !nanny.isLift)//Checks lift requirements
-                        continue;
-                    temp = false;
-                    foreach (var lang in languages)//Checks if nanny speaks at least one required language
-                    {
-                        if(nanny.nannyLanguage.Contains(lang))
-                        {
-                            temp = true;
-                            break;
-                        }
-                    }
-                    if (!temp)
-                        continue;
-                    temp = true;
-                    foreach (var day in parent.parentWorkhours)//Check if nanny work in all the hours the parents require
-                    {
-                        if (nanny.workhours.ContainsKey(day.Key))
-                            if (nanny.workhours[day.Key].Key > day.Value.Key || nanny.workhours[day.Key].Value < day.Value.Value)//Check nanny doesn't start later of finish earlier than the parents need.
-                            {
-                                temp = false;
-                                break;
-                            }
-                    }
-                    if (!temp)
-                        continue;
-                    nannyList.Add(nanny);
-                }
-            }
-            return nannyList;
+            return first.currentStars > second.currentStars ? true : false;
         }
 
         /// <summary>
-        /// childrenWithNoNanny - Returns list of all the children who do not yet have a nanny
-        /// (i.e.are not included in a signed contract)
+        /// checks if the first element is bigger (via full name) than the second
         /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
         /// <returns></returns>
 
-        public List<Child> childrenWithNoNanny()
+        public bool sortByName(Person first, Person second)
         {
-            List<Child> children = dal.getAllChildren();//get all children
-            var childNoNanny = from child in dal.getAllChildren()
-                               from contract in dal.getAllContracts()
-                               where child.ID == contract.ChildId//put child who has contract into list of children to remove from list of all children
-                               select child;
-            foreach (var child in childNoNanny)//remove all children for whom a signed contract has been found.
-            {
-                children.Remove(child);
-            }
-            return children;
+            return ((first.lastName).CompareTo(second.lastName) >= 0 && (first.firstName).CompareTo(second.firstName) > 0) ? true : false;
         }
 
         /// <summary>
-        /// nanniesNearby - returns the nannies are located in a specific radius near the parent's location
+        /// checks if the first element is bigger (via minage) than the second
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="maxDistance"></param>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
         /// <returns></returns>
 
-        public Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance)
+        public bool sortByMinAge(Nanny first, Nanny second)
         {
-            Address addressToSearchFrom = new Address();
-            if (addressToSearchFrom == null)//If parent did not define an address from which to search, use their home address.
-                addressToSearchFrom = parent.personAddress;
-            else
-                addressToSearchFrom = parent.areaToSearchNanny;
-            //////////////////////commment on next line............
-            return nannyAddress(addressToSearchFrom, maxDistance, true);//Do we want this? delegateSort someSort = null, float );
+            return first.minAge > second.minAge ? true : false;
         }
 
-        
+        /// <summary>
+        /// checks if the first element is bigger (via max age) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
+
+        public bool sortByMaxAge(Nanny first, Nanny second)
+        {
+            return first.maxAge > second.maxAge ? true : false;
+        }
+
+        /// <summary>
+        /// checks if the first element is bigger (via price per hour) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
+
+        public bool sortByPricePerHour(Nanny first, Nanny second)
+        {
+            return first.costPerHour < second.costPerHour ? true : false;
+        }
+
+        /// <summary>
+        /// checks if the first element is bigger (via monthly price) than the second
+        /// </summary>
+        /// <param name="first">the object we check</param>
+        /// <param name="second">the object we used to compare</param>
+        /// <returns></returns>
+
+        public bool sortByPricePerMonth(Nanny first, Nanny second)
+        {
+            return first.costPerMonth < second.costPerMonth ? true : false;
+        }
+
+
+        #endregion
+
+        #region EXIST
+        public bool ParentExist(string id)
+        {
+            return dal.ParentExist(id);
+        }
+
+        public bool NannyExist(string id)
+        {
+            return dal.NannyExist(id);
+        }
+
+        public bool ChildExist(string id)
+        {
+            return dal.ChildExist(id);
+        }
+
+        public bool ContractExist(string Contractid)
+        {
+            return dal.ContractExist(Contractid);
+        }
+
+        #endregion
+
+        #region ENTITY
+        public Parent ParentEntity(string id)
+        {
+            return dal.ParentEntity(id);
+        }
+
+        public Nanny NannyEntity(string id)
+        {
+            return dal.NannyEntity(id);
+        }
+
+        public Child ChildEntity(string id)
+        {
+            return dal.ChildEntity(id);
+        }
+
+        public Contract ContractEntity(string Contractid)
+        {
+            return dal.ContractEntity(Contractid);
+        }
+        #endregion
     }
 }
