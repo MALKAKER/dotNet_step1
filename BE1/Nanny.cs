@@ -129,9 +129,9 @@ namespace BE
             {
                 float average = 0;
                 int num = 0;
-                for (int i = 1; i <= stars.Length; i++)
+                for (int i = 0; i <= (stars.Length - 1); i++)
                 {
-                    average += stars[i] * i;
+                    average += stars[i] * ( i + 1 );
                     num += stars[i];
                 }
                 average /= num;

@@ -72,13 +72,25 @@ namespace BL
 
         public void addContract(Contract newContract)
         {
+            //checks the contracts and throw exception
+            checkContract(newContract);
+            dal.addContract(newContract);
+        }
+
+        /// <summary>
+        /// checkContract - checks contract validity
+        /// </summary>
+        /// <param name="newContract">contract to check</param>
+        
+        private void checkContract(Contract newContract)
+        {
             //child's current age
             TimeSpan age = (ChildEntity(newContract.ChildId)).currentAge;
-            
+
             //checks if all entities in the contract exist
             if (!NannyExist(newContract.NannyId) || !ParentExist(newContract.ParentId) || !ParentEntity(newContract.ParentId).childrenId.Contains(newContract.ChildId))
             {
-                throw new Exception("ERROR: One or more stakeholder don't exist in the data base!\n");               
+                throw new Exception("ERROR: One or more stakeholder don't exist in the data base!\n");
             }
             //Checks if the nanny have place to another child
             else if ((((dal.getAllContracts()).FindAll(x => x.NannyId == newContract.NannyId)).Count == ((dal.getAllNanny()).Find(x => x.ID == newContract.NannyId)).maxChildren))
@@ -90,7 +102,6 @@ namespace BL
             {
                 throw new Exception("ERROR: Babies under 3 months can't register to nanny.\n");
             }
-            dal.addContract(newContract);
         }
 
         /// <summary>
@@ -99,6 +110,20 @@ namespace BL
         /// <param name="newNanny">New nanny to the DS</param>
 
         public void addNanny(Nanny newNanny)
+        {
+            checkNanny(newNanny);
+            if (!NannyExist(newNanny.ID))
+                dal.addNanny(newNanny);
+            else
+                throw new Exception("ERROR: Nanny is already exit!\n");
+        }
+
+        /// <summary>
+        /// checkNanny - checks nannies validity
+        /// </summary>
+        /// <param name="newNanny">exexption if the nanny isnt correct</param>
+        
+        private static void checkNanny(Nanny newNanny)
         {
             //nannies age
             TimeSpan age = newNanny.currentAge;
@@ -118,10 +143,6 @@ namespace BL
                 default:
                     break;
             }
-            if (!NannyExist(newNanny.ID))
-                dal.addNanny(newNanny);
-            else
-                throw new Exception("ERROR: Nanny is already exit!\n");
         }
 
         /// <summary>
@@ -349,7 +370,7 @@ namespace BL
         /// <summary>
         /// updateChild - updating child details
         /// </summary>
-        /// <param name="childToUpdate"></param>
+        /// <param name="childToUpdate">a full structure of child to update</param>
 
         public void updateChild(Child childToUpdate)
         {
@@ -366,10 +387,13 @@ namespace BL
         /// <summary>
         /// updateContract - updating contract details
         /// </summary>
-        /// <param name="contractToUpdate"></param>
+        /// <param name="contractToUpdate">contract to update</param>
 
         public void updateContract(Contract contractToUpdate)
         {
+            //checks the contract
+            checkContract(contractToUpdate);
+            //if contract exist, update
             if (ContractExist(contractToUpdate.contractID))
             {
                 dal.updateContract(contractToUpdate);
@@ -387,6 +411,9 @@ namespace BL
 
         public void updateNanny(Nanny nannyToUpdate)
         {
+            //check nanny validity
+            checkNanny(nannyToUpdate);
+            //if nanny exist, update
             if (NannyExist(nannyToUpdate.ID))
             {
                 dal.updateNanny(nannyToUpdate);
@@ -400,7 +427,7 @@ namespace BL
         /// <summary>
         /// updateParent - updates parent
         /// </summary>
-        /// <param name="parentToUpdate"></param>
+        /// <param name="parentToUpdate">void</param>
 
         public void updateParent(Parent parentToUpdate)
         {
@@ -416,40 +443,84 @@ namespace BL
         #endregion
 
         #region GROUPING
+
+        #region CONTRACT DISTANCE
         /// <summary>
         /// grouping by distance (todo- think how to group by another address)
         /// </summary>
-        /// <param name="isSort"></param>
-        /// <param name="someSort"></param>
-        /// <returns></returns>
+        /// <param name="isSort"> boolean parameter indicates if the user wants the results orgenized by some parameter</param>
+        /// <param name="someSort">the sort the user wants to use</param>
+        /// <returns>dictionary of contracts sorted by the user preferance</returns>
 
         public Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null)
         {
+            //by default the function sort by total hours
             sort = sort == null ? ((Contract c) => c.totalHours) : sort;
+            //gets all contracts grouping by distance from the nanny to the parent area 
             var contracts = (from contract in dal.getAllContracts()
                             orderby sort, contract.ChildId
                             group contract by calculateDistance(ParentEntity(contract.ParentId).areaToSearchNanny, NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList());//i didnt consider the optional location
             return contracts;
         }
 
+        //overlapping of the func contractDistance, grouping for the input list
+
+        public Dictionary<int, List<Contract>> contractDistance(List<Contract> cont, bool isSort = false, Func<Contract, int> sort = null)
+        {
+            //by default the function sort by total hours
+            sort = sort == null ? ((Contract c) => c.totalHours) : sort;
+            //gets all contracts grouping by distance from the nanny to the parent area 
+            var contracts = isSort ?  (from contract in cont
+                             orderby sort, contract.ChildId
+                             group contract by calculateDistance(ParentEntity(contract.ParentId).areaToSearchNanny, NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList()):
+                             (from contract in cont
+                              orderby contract.ChildId
+                              group contract by calculateDistance(ParentEntity(contract.ParentId).areaToSearchNanny, NannyEntity(contract.NannyId).personAddress)).ToDictionary(n => n.Key, v => v.ToList());//i didnt consider the optional location
+            return contracts;
+        }
+        #endregion
+
+        #region Language Grouping
         /// <summary>
         /// nannies grouping by language
         /// </summary>
-        /// <param name="isSort"></param>
-        /// <param name="someSort"></param>
-        /// <returns></returns>
+        /// <param name="isSort">if the user want the results orgenized</param>
+        /// <param name="someSort">the sort the user wants</param>
+        /// <returns>the nannies gruaping by</returns>
 
         public Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny, int> sort = null)
         {
             //grouping by the first language because the list is problematic
             sort = sort == null ? ((Nanny n) => n.expYears) : sort;
-            var nannies = (from nanny in dal.getAllNanny()
+            var nannies = isSort ?  (from nanny in dal.getAllNanny()
                            orderby sort, nanny.lastName, nanny.firstName
                            group nanny by nanny.nannyLanguage[0] into tmp//!!
-                           select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+                           select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList()):
+                           (from nanny in dal.getAllNanny()
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.nannyLanguage[0] into tmp//!!
+                            select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
             return nannies;
         }
+        
+        //overlapping
+        public Dictionary<Language, List<Nanny>> nannyLanguage(List<Nanny>  nan, Boolean isSort = false, Func<Nanny, int> sort = null)
+        {
+            //grouping by the first language because the list is problematic
+            sort = sort == null ? ((Nanny n) => n.expYears) : sort;
+            var nannies = isSort ? (from nanny in nan
+                                    orderby sort, nanny.lastName, nanny.firstName
+                                    group nanny by nanny.nannyLanguage[0] into tmp//!!
+                                    select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList()) :
+                           (from nanny in nan
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.nannyLanguage[0] into tmp//!!
+                            select new { lang = tmp.Key, nan = tmp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+            return nannies;
+        }
+        #endregion
 
+        #region LIFT GROUPING
         /// <summary>
         /// nannies grouping by lift
         /// </summary>
@@ -460,13 +531,34 @@ namespace BL
         public Dictionary<bool, List<Nanny>> nannyLift(Boolean isSort = false, Func<Nanny, float> sort = null)
         {
             sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
-            var nannies = (from nanny in dal.getAllNanny()
+            var nannies = isSort ? (from nanny in dal.getAllNanny()
                            orderby sort, nanny.lastName, nanny.firstName
                            group nanny by nanny.isLift into tmp//!!
-                           select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList());
+                           select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList()):
+                           (from nanny in dal.getAllNanny()
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.isLift into tmp//!!
+                            select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList());
+            return nannies;
+        }
+        //overlapping 
+        public Dictionary<bool, List<Nanny>> nannyLift(List<Nanny> nanniesResults, Boolean isSort = false, Func<Nanny, float> sort = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+            var nannies = isSort ? (from nanny in nanniesResults
+                                    orderby sort, nanny.lastName, nanny.firstName
+                                    group nanny by nanny.isLift into tmp//!!
+                                    select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList()) :
+                           (from nanny in nanniesResults
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.isLift into tmp//!!
+                            select new { b = tmp.Key, nan = tmp }).ToDictionary(k => k.b, v => v.nan.ToList());
             return nannies;
         }
 
+        #endregion
+
+        #region ADDRESS GROUP
         /// <summary>
         /// group by address
         /// </summary>
@@ -508,9 +600,48 @@ namespace BL
                  select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList());
             
             return nanniesByDistance;
-            ////////////////////////////Check if this function works!!!!!!!!!!!!!!!!
+            
         }
+        //overlapping
+        public Dictionary<int, List<Nanny>> nannyAddress(List<Nanny> nannyResults, Address loc, bool isSort = false, Func<Nanny, float> sort = null, float? kilometres = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+            Dictionary<int, int> distances = new Dictionary<int, int>();
+            //!
+            foreach (var nanny in nannyResults)
+            {
+                var drivingDirectionRequest = new DirectionsRequest
+                {
+                    TravelMode = TravelMode.Walking,
+                    Origin = loc.ToString(),
+                    Destination = nanny.personAddress.ToString()
+                };
+                DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+                Route route = directions.Routes.First();
+                Leg leg = route.Legs.First();
+                distances.Add(Int32.Parse(nanny.ID), leg.Distance.Value);
+            }
+            //if the func get a parameter kilometers the results will be in the desired range
+            var nanniesByDistance = kilometres == null ?
+                (from nanny in nannyResults
+                 from d in distances
+                 where d.Key == Int32.Parse(nanny.ID)
+                 orderby sort, nanny.firstName, nanny.lastName
+                 group nanny by d.Value into temp
+                 select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList()) :
+                (from nanny in nannyResults
+                 from d in distances
+                 where d.Key == Int32.Parse(nanny.ID) && d.Value <= kilometres
+                 orderby sort, nanny.firstName, nanny.lastName
+                 group nanny by d.Value into temp
+                 select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList());
 
+            return nanniesByDistance;
+
+        }
+        #endregion
+
+        #region MIN AGE GROUP
         /// <summary>
         /// group by minimum age
         /// </summary>
@@ -524,14 +655,39 @@ namespace BL
             {
                 sort = (Nanny n) => n.maxAge;
             }
-            var nannies = (from nanny in dal.getAllNanny()
+            var nannies = isSort ? (from nanny in dal.getAllNanny()
                            orderby sort, nanny.lastName, nanny.firstName
                            group nanny by nanny.minAge into g
-                           select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList());
+                           select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList()):
+                           (from nanny in dal.getAllNanny()
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.minAge into g
+                            select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList());
+
+            return nannies;//////we didnt use sort 
+        }
+        //OVERLAPPING
+        public Dictionary<int, List<Nanny>> nannyAge(List<Nanny> nannyResults, bool isSort = false, Func<Nanny, int> sort = null)
+        {
+
+            if (sort == null)
+            {
+                sort = (Nanny n) => n.maxAge;
+            }
+            var nannies = isSort ? (from nanny in nannyResults
+                                    orderby sort, nanny.lastName, nanny.firstName
+                                    group nanny by nanny.minAge into g
+                                    select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList()) :
+                           (from nanny in nannyResults
+                            orderby nanny.lastName, nanny.firstName
+                            group nanny by nanny.minAge into g
+                            select new { age = g.Key, nan = g }).ToDictionary(k => k.age, v => v.nan.ToList());
 
             return nannies;//////we didnt use sort 
         }
 
+
+        #endregion
         #endregion
 
         #region MATCH
@@ -551,7 +707,7 @@ namespace BL
         /// <param name="tamatHoliday"></param>
         /// <param name="minStars"></param>
         /// <returns></returns>
-        
+
         public List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
         {
             //Get all the nannies that fit to the parent's terms
@@ -605,8 +761,9 @@ namespace BL
         public List<Nanny> initialMatch(Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
         {
             //general constraints
+            bool b = getAllNanny()[0].currentStars >= minStars;
             var nannies = (from nanny in getAllNanny()
-                          where skill.All(nanny.nannySkills.Contains) && nanny.nannyGender.Equals(gender) && languages.Any(nanny.nannyLanguage.Contains) && nanny.expYears >= minExpYears
+                          where skill.TrueForAll(nanny.nannySkills.Contains) && nanny.nannyGender.Equals(gender) && languages.Any(nanny.nannyLanguage.Contains) && nanny.expYears >= minExpYears
                           && nanny.workField.Equals(spec) && nanny.costPerHour < maxCostPerHour && (nanny.isVacation || !tamatHoliday) && nanny.currentStars >= minStars
                           && (nanny.isLift || !liftInBuilding) && checkHours(nanny, parent)
                           select nanny).ToList();

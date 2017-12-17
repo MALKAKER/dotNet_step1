@@ -310,9 +310,9 @@ namespace ConsoleApp1
                 Dictionary<Language, List<Nanny>> tmp1 = mybl.nannyLanguage();
                 Dictionary<int, List<Nanny>> tmp2 = mybl.nannyAge();
                 Dictionary<int, List<Contract>> tmp3 = mybl.contractDistance();
-                #endregion
-                
                 mybl.initialMatch(parent, Gender.female, temp2, temp, 1, Specialization.Babysitter, 30, true, true, 3);
+                #endregion
+
 
                 Console.WriteLine("done\n");
                 Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -323,7 +323,7 @@ namespace ConsoleApp1
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
             }
             
             Console.WriteLine("Press any key to continue...");

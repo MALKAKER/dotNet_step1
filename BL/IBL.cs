@@ -119,18 +119,24 @@ namespace BL
 
         //nannies grouping by age
         Dictionary<int, List<Nanny>> nannyAge(Boolean isSort =false, Func<Nanny, int> sort = null);
+        Dictionary<int, List<Nanny>> nannyAge(List<Nanny> nan, Boolean isSort = false, Func<Nanny, int> sort = null);
 
         //nannies grouping by address
         Dictionary<int, List<Nanny>> nannyAddress(Address loc,  Boolean isSort = false, Func<Nanny, float> sort = null, float? kilometres = null);
+        Dictionary<int, List<Nanny>> nannyAddress(List<Nanny> nan, Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? kilometres = null);
 
         //nannies grouping by launguage
         Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null);
+        Dictionary<Language, List<Nanny>> nannyLanguage(List<Nanny> nan, Boolean isSort = false, Func<Nanny, int> sort = null);
 
         //nannies grouping by lift
         Dictionary<bool, List<Nanny>> nannyLift(Boolean isSort = false, Func<Nanny, float> sort = null);
+        Dictionary<bool, List<Nanny>> nannyLift(List<Nanny> nan, Boolean isSort = false, Func<Nanny, float> sort = null);
 
         //the distance from the parents location to the nannie's
         Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null);
-#endregion   
+        Dictionary<int, List<Contract>> contractDistance(List<Contract> cont, bool isSort = false, Func<Contract, int> sort = null);
+
+#endregion
     }
 }
