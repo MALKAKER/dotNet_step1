@@ -695,50 +695,50 @@ namespace BL
         /// <summary>
         /// betterMatchNanny - returns all the nannies that fit to all terms including the address
         /// </summary>
-        /// <param name="area"></param>
-        /// <param name="parent"></param>
-        /// <param name="gender"></param>
-        /// <param name="skill"></param>
-        /// <param name="languages"></param>
-        /// <param name="minExpYears"></param>
-        /// <param name="spec"></param>
-        /// <param name="maxCostPerHour"></param>
-        /// <param name="liftInBuilding"></param>
-        /// <param name="tamatHoliday"></param>
-        /// <param name="minStars"></param>
-        /// <returns></returns>
+        /// <param name="radius"> the desired distance radius between the nanny and the parent's area</param>
+        /// <param name="parent">the parent</param>
+        /// <param name="gender">the gender of the desired nanny</param>
+        /// <param name="skill">the skills the parent wants in the nanny</param>
+        /// <param name="languages">the languages the nanny should know</param>
+        /// <param name="minExpYears">the minimum years of experience the parent expect from the nanny</param>
+        /// <param name="spec">the nannies specialization the parent needs </param>
+        /// <param name="maxCostPerHour">the maximum cost the parrent afford to pay</param>
+        /// <param name="liftInBuilding">if it is important to the parent - lift in the buildiing</param>
+        /// <param name="tamatHoliday">if the parent wants the tamat holiday</param>
+        /// <param name="minStars">minimum nannies score the parent wants </param>
+        /// <returns>list of the nannies with the better match</returns>
 
-        public List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
+        public List<Nanny> betterMatchNanny(float radius, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null)
         {
             //Get all the nannies that fit to the parent's terms
             List<Nanny> nanniesBasic = initialMatch(parent, gender, skill, languages, minExpYears, spec, maxCostPerHour, liftInBuilding, tamatHoliday, minStars, childId);
             //Add location constrain to the selection
-            List<Nanny> nanniesAddress = null;//nanniesAddress(area, );
-            //Pick the results that apear at both lists
-            var mergeNannies = from nannyBasic in nanniesBasic
-                               from nannyAddress in nanniesAddress
-                               where nannyBasic.ID == nannyAddress.ID
-                               orderby nannyAddress.lastName, nannyAddress.firstName
-                               select nannyAddress;
-            //Returns nannie's array 
-            return mergeNannies.ToList();
+            Dictionary<int, List<Nanny>> nannies = nanniesNearby(parent, radius) ;
+            List<Nanny> nana = new List<Nanny>();
+            //convert into list
+            foreach (List<Nanny> item in nannies.Values)
+            {
+                nana.AddRange(item);
+            }
+            return nana;
         }
 
         /// <summary>
         /// initialMatch - Returns the nannies who are fit to specific terms
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="gender"></param>
-        /// <param name="skill"></param>
-        /// <param name="languages"></param>
-        /// <param name="minExpYears"></param>
-        /// <param name="spec"></param>
-        /// <param name="maxCostPerHour"></param>
-        /// <param name="liftInBuilding"></param>
-        /// <param name="tamatHoliday"></param>
-        /// <param name="minStars"></param>
-        /// <returns></returns>
-        
+        /// <param name="parent">the parent</param>
+        /// <param name="gender">the gender of the desired nanny</param>
+        /// <param name="skill">the skills the parent wants in the nanny</param>
+        /// <param name="languages">the languages the nanny should know</param>
+        /// <param name="minExpYears">the minimum years of experience the parent expect from the nanny</param>
+        /// <param name="spec">the nannies specialization the parent needs </param>
+        /// <param name="maxCostPerHour">the maximum cost the parrent afford to pay</param>
+        /// <param name="liftInBuilding">if it is important to the parent - lift in the buildiing</param>
+        /// <param name="tamatHoliday">if the parent wants the tamat holiday</param>
+        /// <param name="minStars">minimum nannies score the parent wants </param>
+        /// <returns>list of the nannies with the better match</returns>
+        /// <returns>initial list of Appropriate nannies</returns>
+
         //help function to initial match
         private bool checkHours(Nanny nanny, Parent parent)
         {
@@ -767,11 +767,7 @@ namespace BL
                           && nanny.workField.Equals(spec) && nanny.costPerHour < maxCostPerHour && (nanny.isVacation || !tamatHoliday) && nanny.currentStars >= minStars
                           && (nanny.isLift || !liftInBuilding) && checkHours(nanny, parent)
                           select nanny).ToList();
-            //if the existance of the lift is important to the parent
-            //if (liftInBuilding)
-            //{
-            //    nannies = nannies.FindAll(x => x.isLift);
-            //}
+            
 
             //if the search is about a specific child
             if (childId != null)
@@ -785,15 +781,15 @@ namespace BL
         /// <summary>
         /// nanniesNearby - returns the nannies are located in a specific radius near the parent's location
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="maxDistance"></param>
+        /// <param name="parent">parent's details</param>
+        /// <param name="maxDistance">maximum distance the parent wants to walk</param>
         /// <returns></returns>
 
         public Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance)
         {
             Address addressToSearchFrom = new Address();
             //If parent did not define an address from which to search, use their home address.
-            if (addressToSearchFrom == null)
+            if (parent.areaToSearchNanny == null)
                 addressToSearchFrom = parent.personAddress;
             else
                 addressToSearchFrom = parent.areaToSearchNanny;

@@ -323,7 +323,7 @@ namespace ConsoleApp1
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
             
             Console.WriteLine("Press any key to continue...");

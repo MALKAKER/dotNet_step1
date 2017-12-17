@@ -101,7 +101,7 @@ namespace BL
         Dictionary<int, List<Nanny>> nanniesNearby(Parent parent, float maxDistance);
 
         //matches optional nannies to parent according to specific constrains and area
-        List<Nanny> betterMatchNanny(Address area, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null);
+        List<Nanny> betterMatchNanny(float radius, Parent parent, Gender gender, List<SKILLS> skill, List<Language> languages, int minExpYears, Specialization spec, decimal maxCostPerHour, bool liftInBuilding, bool tamatHoliday, float minStars, String childId = null);
 
         //returns children that still dont have nanny
         List<Child> childrenWithNoNanny();
