@@ -125,6 +125,10 @@ namespace BL
         Dictionary<int, List<Nanny>> nannyAddress(Address loc,  Boolean isSort = false, Func<Nanny, float> sort = null, float? kilometres = null);
         Dictionary<int, List<Nanny>> nannyAddress(List<Nanny> nan, Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? kilometres = null);
 
+        //nannies grouping by walk time address
+        Dictionary< TimeSpan, List<Nanny>> nannyTimeAddress(Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? durationTime = null);
+        Dictionary<TimeSpan, List<Nanny>> nannyTimeAddress(List<Nanny> nan, Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? durationTime = null);
+
         //nannies grouping by launguage
         Dictionary<Language, List<Nanny>> nannyLanguage(Boolean isSort = false, Func<Nanny,int> sort = null);
         Dictionary<Language, List<Nanny>> nannyLanguage(List<Nanny> nan, Boolean isSort = false, Func<Nanny, int> sort = null);
@@ -137,6 +141,13 @@ namespace BL
         Dictionary<int, List<Contract>> contractDistance(bool isSort = false, Func<Contract, int> sort = null);
         Dictionary<int, List<Contract>> contractDistance(List<Contract> cont, bool isSort = false, Func<Contract, int> sort = null);
 
-#endregion
+        //statistics
+        //returns the first ten nannies with the highest average contract per month
+        Dictionary<int, List<Nanny>> averageContract();
+        //the ten first richest nannies
+        Dictionary<int, List<Nanny>> richNanny();
+        //the ten contract's record holders 
+        Dictionary<int, List<Nanny>> highestRecord();
+        #endregion
     }
 }

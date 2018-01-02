@@ -4,6 +4,20 @@
              xmlns:local="clr-namespace:UI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Grid x:Key="childDetails" Height="Auto" Width="Auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="childMoreDetails" Width="auto" VerticalAlignment="Center"  Margin="3" ItemsSource="{Binding childDetails.key}" Height="Auto" HorizontalAlignment="Left" Grid.Column="0" SelectionChanged="childDetails_SelectionChanged">
+                <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+            </ComboBox>
+            <TextBox x:Name="expandedDetails" HorizontalAlignment="Stretch"></TextBox>
+        </Grid>
+        
     </Application.Resources>
 </Application>

@@ -1,23 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace BE
 {
     //bank names need to fill numbers
-    public enum Bank {Hapoalim = 12, Yahav, Leumi, Mizrahi_Tefahot, Discount, HaBinleumi};
+    public enum Bank {
+        [Description("Hapoalim")] Hapoalim = 12,
+        [Description("Yahav")] Yahav,
+        [Description("Leumi")] Leumi,
+        [Description("Mizrahi Tefahot")] Mizrahi_Tefahot,
+        [Description("Discount")] Discount,
+        [Description("HaBinleumi")] HaBinleumi };
     //which gender
-    public enum Gender {male, female };
+    public enum Gender
+    {
+        [Description("Male")]male,
+        [Description("Female")] female };
     //what kind of employee 
-    public enum Specialization {Nanny, Babysitter };
+    public enum Specialization
+    {
+        [Description("Nanny")]Nanny,
+        [Description("Babysitter")] Babysitter };
     //nannies skills
-    public enum SKILLS { Special_Needs, Warm, Orgenized, Creative, Patient, Calm, Tidy, Happy}
+    public enum SKILLS {
+        [Description("Special Needs")]Special_Needs,
+        [Description("Warm")] Warm,
+        [Description("Orgenized")] Orgenized,
+        [Description("Creative")] Creative,
+        [Description("Patient")] Patient,
+        [Description("Calm")] Calm,
+        [Description("Tidy")] Tidy,
+        [Description("Happy")] Happy }
     //the language the employee speaks
-    public enum Language {Hebrew, English, Yiddish, Arabic, French };//(add more languages)
+    public enum Language {
+        [Description("Hebrew")] Hebrew,
+        [Description("English")] English,
+        [Description("Yiddish")] Yiddish,
+        [Description("Arabic")] Arabic,
+        [Description("French")] French };//(add more languages)
     //important information about the child
-    public enum ChildInfo {Allergies, SpecialNeeds, Desease };// maybe there are more details to fill in
+    public enum ChildInfo {[Description("Allergies")] Allergies,
+        [Description("Special Needs")] SpecialNeeds,
+        [Description("Desease")] Desease };// maybe there are more details to fill in
     //the child's HMO
-    public enum HMO {Clalit, Meuhedet, Maccabi, Leumit };
+    public enum HMO {[Description("Clalit")] Clalit,
+        [Description("Meuhedet")] Meuhedet,
+        [Description("Maccabi")] Maccabi,
+        [Description("Leumit")] Leumit };
     //countries
     enum Countries
     {
@@ -30,7 +61,7 @@ namespace BE
         Falkland_Islands_Malvinas, Faroe_Islands, Fiji, Finland, France, French_Guiana, French_Polynesia, French_Southern_Territories, Gabon, Gambia,
         Georgia, Germany, Ghana, Gibraltar, Greece, Greenland, Grenada, Guadeloupe, Guam, Guatemala, Guinea, Guinea_Bissau, Guyana, Haiti,
         Heard_Island_and_Mcdonald_Islands, Holy_See_Vatican_City_State, Honduras, Hong_Kong, Hungary, Iceland, India, Indonesia, Iran, Islamic_Republic_of_Iraq,
-        Ireland, Israel, Italy, Ivory_Coast, Jamaica, Japan, Jordan, Kazakstan, Kenya, Kiribati, Korea, Democratic_Republic_of_Korea, Republic_of_Kosovo, Kuwait,
+        Ireland,[Description("Israel")] Israel, Italy, Ivory_Coast, Jamaica, Japan, Jordan, Kazakstan, Kenya, Kiribati, Korea, Democratic_Republic_of_Korea, Republic_of_Kosovo, Kuwait,
         Kyrgyzstan, Lao_Democratic_Republic, Latvia, Lebanon, Lesotho, Liberia, Libyan_Arab_Jamahiriya, Liechtenstein, Lithuania, Luxembourg, Macau,
         Macedonia, The_Former_Yugoslav_Republic_of_Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall_Islands, Martinique, Mauritania,
         Mauritius, Mayotte, Mexico, Micronesia, Federated_States_of_Moldova, Republic_of_Monaco, Mongolia, Montserrat, Montenegro, Morocco, Mozambique,

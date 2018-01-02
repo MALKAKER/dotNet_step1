@@ -5,9 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Nanny For You" Height="400" Width="600"
+        Background="Beige">
     <Grid>
-        
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"></RowDefinition>
+            <RowDefinition Height="10*"></RowDefinition>
+            <RowDefinition Height="60*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="home"  Content="Home" Width="100" Padding="0"/>
+            <Button Content="Nanny" Width="100" Padding="0" Click="NannyOption"/>
+            <Button Content="Parent" Width="100" Padding="0" Click="ParentOption"/>
+            <Button Content="Contract" Width="100" Click="ContractOption"/>
+            <Button Content="About" Width="100" Click="AboutOption"/>
+        </StackPanel>
     </Grid>
 </Window>

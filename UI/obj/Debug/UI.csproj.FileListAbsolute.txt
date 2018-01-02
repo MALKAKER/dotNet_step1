@@ -23,3 +23,11 @@ C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csproj.G
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.csproj.CoreCompileInputs.cache
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.exe
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\UI.pdb
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\contract.g.cs
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\Nanny.g.cs
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\parent.g.cs
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\contract.baml
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\Nanny.baml
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\parent.baml
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\Child.g.cs
+C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\obj\Debug\ChildUserControl.g.cs

@@ -20,8 +20,8 @@ namespace BE
         #endregion
 
         #region Attributes
-        
-
+        //the date the contract was generated
+        public DateTime openRequest { get; set; }
         //parent
         public String ParentId { get; set; }
         //child id

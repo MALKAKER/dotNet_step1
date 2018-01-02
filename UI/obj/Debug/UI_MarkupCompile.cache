@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\malki\Documents\Visual Studio 2017\Projects\PL\UI\App.xaml
-11151548125
+51878886146
 
-5-2017746502
+9-1932782086
 15-464557707
-MainWindow.xaml;
+ChildUserControl.xaml;contract.xaml;MainWindow.xaml;Nanny.xaml;parent.xaml;
 
-False
+True
 

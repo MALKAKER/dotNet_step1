@@ -66,9 +66,6 @@ namespace ConsoleApp1
                     lastName = "ISRAELI",
                     childrenId = tmpChildren,
                     areaToSearchNanny = address,
-                    firstNameAnotherParent = "ISRAEL",
-                    lastNameAnotherParent = "ISRAELI",
-                    mobileAnotherParent = "0545337060",
                     parentWorkhours = tmpDate
                      
                 };
@@ -84,9 +81,7 @@ namespace ConsoleApp1
                     lastName = "ISRAELI",
                     childrenId = tmpChildren,
                     areaToSearchNanny = address,
-                    firstNameAnotherParent = "ISRAEL",
-                    lastNameAnotherParent = "ISRAELI",
-                    mobileAnotherParent = "0545337060",
+                    
                     parentWorkhours = tmpDate
 
                 };
@@ -311,9 +306,10 @@ namespace ConsoleApp1
                 Dictionary<int, List<Nanny>> tmp2 = mybl.nannyAge();
                 Dictionary<int, List<Contract>> tmp3 = mybl.contractDistance();
                 mybl.initialMatch(parent, Gender.female, temp2, temp, 1, Specialization.Babysitter, 30, true, true, 3);
+                mybl.betterMatchNanny(10000, parent, Gender.female, temp2, temp, 1, Specialization.Babysitter, 30, true, true, 3);
                 #endregion
 
-
+                //mybl.nannyTimeAddress(address, true, (Nanny n) => n.currentStars, 1);// arrival time = null why???
                 Console.WriteLine("done\n");
                 Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 

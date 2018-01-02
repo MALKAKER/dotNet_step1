@@ -641,6 +641,62 @@ namespace BL
         }
         #endregion
 
+        #region TIME WALK GROUP
+        public Dictionary<TimeSpan, List<Nanny>> nannyTimeAddress(Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? durationTime = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+            
+            //if the func get a parameter durationTime the results will be in the desired time range
+            var nanniesByTimeDistance = durationTime == null ? 
+                (from nanny in getAllNanny()
+                 orderby sort, nanny.firstName, nanny.lastName
+                 group nanny by distanceTime(loc, nanny) into temp
+                 select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList()):
+                 (from nanny in getAllNanny()
+                  where distanceTime(loc, nanny).CompareTo(TimeSpan.FromHours(durationTime.Value)) <= 0
+                  orderby sort, nanny.firstName, nanny.lastName
+                  group nanny by distanceTime(loc, nanny) into temp
+                  select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+
+            return nanniesByTimeDistance;
+        }
+
+        //calculae the time to walk the distance
+        private static TimeSpan distanceTime(Address loc, Nanny nanny)
+        {
+            var drivingDirectionRequest = new DirectionsRequest
+            {
+                TravelMode = TravelMode.Walking,
+                Origin = loc.ToString(),
+                Destination = nanny.personAddress.ToString()
+            };
+            DirectionsResponse directions = GoogleMaps.Directions.Query(drivingDirectionRequest);
+            Route route = directions.Routes.First();
+            Leg leg = route.Legs.First();
+            TimeSpan s = leg.ArrivalTime.Value - leg.DepartureTime.Value;
+            return s;
+        }
+        //overlapping
+        public Dictionary<TimeSpan, List<Nanny>> nannyTimeAddress(List<Nanny> nan, Address loc, Boolean isSort = false, Func<Nanny, float> sort = null, float? durationTime = null)
+        {
+            sort = sort == null ? ((Nanny n) => n.currentStars) : sort;
+
+            //if the func get a parameter durationTime the results will be in the desired time range
+            var nanniesByTimeDistance = durationTime == null ?
+                (from nanny in nan
+                 orderby sort, nanny.firstName, nanny.lastName
+                 group nanny by distanceTime(loc, nanny) into temp
+                 select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList()) :
+                 (from nanny in nan
+                  where distanceTime(loc, nanny).CompareTo(TimeSpan.FromHours(durationTime.Value)) <= 0
+                  orderby sort, nanny.firstName, nanny.lastName
+                  group nanny by distanceTime(loc, nanny) into temp
+                  select new { lang = temp.Key, nan = temp }).ToDictionary(k => k.lang, v => v.nan.ToList());
+
+            return nanniesByTimeDistance;
+        }
+        #endregion
+
         #region MIN AGE GROUP
         /// <summary>
         /// group by minimum age
@@ -1151,6 +1207,48 @@ namespace BL
         {
             return dal.ContractEntity(Contractid);
         }
+
+
         #endregion
+
+        #region STATISTICS
+        /// <summary>
+        /// calculates the average contract per month and return the top ten
+        /// </summary>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Nanny>> averageContract()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// calculate the monthly total wage  per month and the top ten nannies
+        /// </summary>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Nanny>> richNanny()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// calculate the contracts per nanny and and the top ten record holders
+        /// </summary>
+        /// <returns></returns>
+
+        public Dictionary<int, List<Nanny>> highestRecord()
+        {
+            var tmp = (from nanny in getAllNanny()
+                           let num = numberOfContracts((Contract c) => c.NannyId == nanny.ID)
+                           orderby num descending
+                           group nanny by num into g
+                           select new { contNum = g.Key, nan = g }).ToDictionary(k => k.contNum, v => v.nan.ToList());
+            
+            //to do - select the top ten
+            return tmp;
+        }
+        #endregion
+
     }
 }

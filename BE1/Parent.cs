@@ -8,9 +8,6 @@ namespace BE
     {
         #region Fields
         private Dictionary<DayOfWeek, KeyValuePair<int, int>> parentWorkhoursP;
-        private string firstNameAnotherParentP;
-        private string lastNameAnotherParentP;
-        private string mobileAnotherParentP;
         private List<string> childrenIdP;
         private String passwordP;
         #endregion
@@ -38,46 +35,7 @@ namespace BE
         //here I think we need google maps API, and the check of the input is in the ADDRESS
         public Address areaToSearchNanny{ get;set; }
         
-        //another parent details (optional)
-        public String firstNameAnotherParent
-        {
-            get { return firstNameAnotherParentP; }
-            set
-            {
-                if (value.Length < 2)
-                {
-                    throw new Exception("The firstname is too short!\n");
-                }
-                firstNameAnotherParentP = value;
-            }
-        }
-
-        public String lastNameAnotherParent
-        {
-            get { return lastNameAnotherParentP; }
-            set
-            {
-                if (value.Length < 2)
-                {
-                    throw new Exception("The lastname is too short!\n");
-                }
-                lastNameAnotherParentP = value;
-            }
-        }
-
-        public String mobileAnotherParent
-        {
-            get { return mobileAnotherParentP; }
-            set
-            {
-                //in israel the mobile-phone number length with prefix is about 10 digits
-                if (value.Length < 10 || value.Length > 10)
-                {
-                    throw new Exception("Invalid phone number!\n");
-                }
-                mobileAnotherParentP = value;
-            }
-        }
+        
         
         //the parent kids who need nanny
         public List<String> childrenId
@@ -113,16 +71,14 @@ namespace BE
         
         public Parent(String myFirstName, String myLastName, String myID, DateTime myDateOfBirth,
             String myEmail, String myLandLinePhone, String myMobile, Address myPersonAddress, Dictionary<DayOfWeek, KeyValuePair<int, int>> myParentWorkhours,
-            List<String> myChildrenId, Address myAreaToSearchNanny = null, String myFirstNameAnotherParent=null, String myLastNameAnotherParent=null, 
-            String myMobileAnotherParent=null) :base(myFirstName, myLastName, myID, myDateOfBirth,
+            List<String> myChildrenId, Address myAreaToSearchNanny = null
+            ) :base(myFirstName, myLastName, myID, myDateOfBirth,
              myEmail, myLandLinePhone, myMobile, myPersonAddress)
         {
             parentWorkhours = new Dictionary<DayOfWeek, KeyValuePair<int, int>>();
             parentWorkhours = myParentWorkhours;
             areaToSearchNanny = myAreaToSearchNanny == null ? myPersonAddress: myAreaToSearchNanny;
-            firstNameAnotherParent = myFirstNameAnotherParent;
-            lastNameAnotherParent = myLastNameAnotherParent;
-            mobileAnotherParent = myMobileAnotherParent;
+            
             childrenId = myChildrenId;
         }
         //empty constructor
@@ -136,10 +92,9 @@ namespace BE
         {
             //childrenId needs a new tostring
             int tmp = base.ToString().IndexOf("Address:");
-            return String.Format("{0}"+(firstNameAnotherParent!=null ? "Another parent:\n{1} {2}\nMobile: {3}\n":"")+
-                "Number of children in the current nanny: {4}\n{5}",
-                base.ToString().Substring(0,tmp), firstNameAnotherParent,
-                lastNameAnotherParent, mobileAnotherParent, childrenId.Count, base.ToString().Substring(tmp));
+            return String.Format("{0}"+
+                "Number of children in the current nanny: {1}\n{2}",
+                base.ToString().Substring(0,tmp), childrenId.Count, base.ToString().Substring(tmp));
         }
         #endregion
     }

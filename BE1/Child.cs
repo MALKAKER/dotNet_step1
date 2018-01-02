@@ -12,11 +12,7 @@ namespace BE
         //will update from the parent class and the checking is there
 
         #region Fields:
-        /*      private String parentIdP;
-                private Dictionary<ChildInfo, String> childDetailsP;
-                private List<Language> childLanguageP;
-                private HMO childHMOP;
-                private bool specialNeedsP;*/
+        
 
         public String parentId { get; set; }
         //if the child has special needs
