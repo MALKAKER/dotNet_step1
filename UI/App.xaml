@@ -4,20 +4,51 @@
              xmlns:local="clr-namespace:UI"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Grid x:Key="childDetails" Height="Auto" Width="Auto">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="3*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <ComboBox x:Name="childMoreDetails" Width="auto" VerticalAlignment="Center"  Margin="3" ItemsSource="{Binding childDetails.key}" Height="Auto" HorizontalAlignment="Left" Grid.Column="0" SelectionChanged="childDetails_SelectionChanged">
-                <ComboBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                </ComboBox.ItemsPanel>
-            </ComboBox>
-            <TextBox x:Name="expandedDetails" HorizontalAlignment="Stretch"></TextBox>
-        </Grid>
         
+        <Style x:Key="emptyBox" TargetType="TextBox" >
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- Hint  and red border for the TextBox -->
+        <Style x:Key="hint1" TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+            <Style.Resources>
+                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                    <VisualBrush.Visual>
+                        <Label Content="Search" Foreground="LightGray" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Style.Resources>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Background" Value="White" />
+                </Trigger>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="hint2"  TargetType="TextBox">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding ="{Binding ElementName=PalceHolder, Path=IsFocused}" Value="true"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Text" Value=""/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+
     </Application.Resources>
 </Application>

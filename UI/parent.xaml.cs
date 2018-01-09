@@ -23,5 +23,40 @@ namespace UI
         {
             InitializeComponent();
         }
+
+        private void AddParent(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UpdateParent(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RemoveParent(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void country_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void addPreviousChildToList_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ChildUserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ChildUserControl_Loaded_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

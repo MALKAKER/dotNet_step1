@@ -6,19 +6,20 @@
         xmlns:local="clr-namespace:UI"
         xmlns:BE="clr-namespace:BE;assembly=BE1" x:Class="UI.parent"
         mc:Ignorable="d"
-        Title="Parent" Height="600" Width="1000" Loaded="Window_Loaded_1">
+        Background="Beige"
+        Title="Parent" Width="1000" Height="1232.667">
     <Window.Resources>
         <CollectionViewSource x:Key="parentViewSource" d:DesignSource="{d:DesignInstance {x:Type BE:Parent}, CreateList=True}"/>
     </Window.Resources>
-    <ScrollViewer Margin="0,0,0.333,-152.333">
+    <ScrollViewer >
         <Grid ShowGridLines="True">
             <Grid.RowDefinitions>
-                <RowDefinition Height="5*"/>
-                <RowDefinition Height="50*"/>
-                <RowDefinition Height="20*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Label Content="Add Parent" FontSize="30" HorizontalAlignment="Center"/>
-            <Grid x:Name="addNanny" ShowGridLines="True" DataContext="{StaticResource parentViewSource}" Grid.Row="1">
+            <Label Content="Add Parent" FontSize="30" HorizontalAlignment="Center" Margin="409,0,409,0.333" Width="158"/>
+            <Grid x:Name="addNanny" DataContext="{StaticResource parentViewSource}" Grid.Row="1" Margin="38,36.667,50,178" Grid.RowSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -37,55 +38,109 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
-
-
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <Label Content="ID:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="iDTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="0" Text="{Binding ID, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="First Name:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="firstNameTextBox" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="0" Text="{Binding firstName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Last Name:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="lastNameTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="0" Text="{Binding lastName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Date Of Birth:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
-                <DatePicker x:Name="dateOfBirthDatePicker" Grid.Column="1" HorizontalAlignment="Left" Margin="3" Grid.Row="1" SelectedDate="{Binding dateOfBirth, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center"/>
-                <Label Content="Land Line Phone:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="landLinePhoneTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="2" Text="{Binding landLinePhone, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Mobile:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="mobileTextBox" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="2" Text="{Binding mobile, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="E-mail:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="emailTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="2" Text="{Binding email, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="House:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="3" VerticalAlignment="Center"/>
-                <TextBox x:Name="houseTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="3" Text="{Binding areaToSearchNanny.house, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Flat:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="3" VerticalAlignment="Center"/>
-                <TextBox x:Name="flatTextBox" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="3" Text="{Binding areaToSearchNanny.flat, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Floor:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="3" VerticalAlignment="Center"/>
-                <TextBox x:Name="floorTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="3" Text="{Binding areaToSearchNanny.floor, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Street:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
-                <TextBox x:Name="streetTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding areaToSearchNanny.street, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Address Line 2:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
-                <TextBox x:Name="addressLine2TextBox" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding areaToSearchNanny.addressLine2, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="City:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
-                <TextBox x:Name="cityTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding areaToSearchNanny.city, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Country:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="5" VerticalAlignment="Center"/>
-                <TextBox x:Name="countryTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="5" Text="{Binding areaToSearchNanny.country, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Post-Code:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="6" VerticalAlignment="Center"/>
-                <TextBox x:Name="postCodeTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="6" Text="{Binding areaToSearchNanny.postCode, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
-                <Label Content="Password:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="8" VerticalAlignment="Center"/>
-                <TextBox x:Name="passwordTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="8" Text="{Binding password, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Basic Details" Grid.Row="0" Grid.ColumnSpan="6" HorizontalAlignment="Center"></Label>
+                <Label Content="ID:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBox x:Name="iDTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="1" Text="{Binding ID, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="First Name:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBox x:Name="firstNameTextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="1" Text="{Binding firstName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Last Name:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                <TextBox x:Name="lastNameTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="1" Text="{Binding lastName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Date Of Birth:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                <DatePicker x:Name="dateOfBirthDatePicker" Grid.Column="3" HorizontalAlignment="Left" Margin="3" Grid.Row="2" SelectedDate="{Binding dateOfBirth, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center"/>
+                <Label Content="Contact Details" Grid.Row="3" Grid.ColumnSpan="6" HorizontalAlignment="Center"></Label>
+                <Label Content="Land Line Phone:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
+                <TextBox x:Name="landLinePhoneTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding landLinePhone, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Mobile:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
+                <TextBox x:Name="mobileTextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding mobile, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="E-mail:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="4" VerticalAlignment="Center"/>
+                <TextBox x:Name="emailTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="4" Text="{Binding email, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Address:" Grid.Row="5" Grid.ColumnSpan="6" HorizontalAlignment="Center"></Label>
+                <Label Content="House:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="6" VerticalAlignment="Center"/>
+                <TextBox x:Name="houseTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="6" Text="{Binding areaToSearchNanny.house, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Flat:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="6" VerticalAlignment="Center"/>
+                <TextBox x:Name="flatTextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="6" Text="{Binding areaToSearchNanny.flat, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Floor:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="6" VerticalAlignment="Center"/>
+                <TextBox x:Name="floorTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="6" Text="{Binding areaToSearchNanny.floor, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Street:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="7" VerticalAlignment="Center"/>
+                <TextBox x:Name="streetTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="7" Text="{Binding areaToSearchNanny.street, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Address Line 2:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="7" VerticalAlignment="Center"/>
+                <TextBox x:Name="addressLine2TextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="7" Text="{Binding areaToSearchNanny.addressLine2, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="City:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="7" VerticalAlignment="Center"/>
+                <TextBox x:Name="cityTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="7" Text="{Binding areaToSearchNanny.city, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Country:" Grid.Column="1" HorizontalAlignment="Left" Margin="3" Grid.Row="8" VerticalAlignment="Center"/>
+                <ComboBox x:Name="countryComboBox" Width="120" VerticalAlignment="Center" Grid.Row="8" Margin="3" ItemsSource="{Binding}" Height="Auto" HorizontalAlignment="Left" DisplayMemberPath="areaToSearch.country" Grid.Column="2" SelectionChanged="country_SelectionChanged">
+                    <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ComboBox.ItemsPanel>
+                </ComboBox>
+                <Label Content="Post-Code:" Grid.Column="3" HorizontalAlignment="Left" Margin="3" Grid.Row="8" VerticalAlignment="Center"/>
+                <TextBox x:Name="postCodeTextBox" Style="{StaticResource hint1}" Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="8" Text="{Binding areaToSearchNanny.postCode, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Fevorite Area:" Grid.Row="9" Grid.ColumnSpan="6" HorizontalAlignment="Center"></Label>
+                <Label Content="House:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="10" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaHouseTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="10" Text="{Binding areaToSearchNanny.house, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Flat:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="10" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaFlatTextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="10" Text="{Binding areaToSearchNanny.flat, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Floor:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="10" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaFloorTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="10" Text="{Binding areaToSearchNanny.floor, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Street:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="11" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaStreetTextBox" Style="{StaticResource hint1}" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="11" Text="{Binding areaToSearchNanny.street, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Address Line 2:" Grid.Column="2" HorizontalAlignment="Left" Margin="3" Grid.Row="11" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaAddressLine2TextBox" Style="{StaticResource hint1}" Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="11" Text="{Binding areaToSearchNanny.addressLine2, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="City:" Grid.Column="4" HorizontalAlignment="Left" Margin="3" Grid.Row="11" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaCityTextBox" Style="{StaticResource hint1}" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="11" Text="{Binding areaToSearchNanny.city, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Label Content="Country:" Grid.Column="1" HorizontalAlignment="Left" Margin="3" Grid.Row="12" VerticalAlignment="Center"/>
+                <ComboBox x:Name="areaCountryComboBox" Width="120" VerticalAlignment="Center" Grid.Row="12" Margin="3" ItemsSource="{Binding}" Height="Auto" HorizontalAlignment="Left" DisplayMemberPath="areaToSearch.country" Grid.Column="2" SelectionChanged="country_SelectionChanged">
+                    <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ComboBox.ItemsPanel>
+                </ComboBox>
+                <Label Content="Post-Code:" Grid.Column="3" HorizontalAlignment="Left" Margin="3" Grid.Row="12" VerticalAlignment="Center"/>
+                <TextBox x:Name="areaPostCodeTextBox" Style="{StaticResource hint1}" Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="3" Grid.Row="12" Text="{Binding areaToSearchNanny.postCode, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                <Expander Grid.Row="13" Grid.ColumnSpan="6" Grid.RowSpan="5" Header="Children:" HorizontalAlignment="Center">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <ScrollViewer Grid.Row="0" >
+                            <WrapPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                <local:ChildUserControl Loaded="ChildUserControl_Loaded_1" />
+                            </WrapPanel>
+                        </ScrollViewer>
+                        <Button Name="addChildButton" Grid.Row="1" Content="Add Child" Click="addPreviousChildToList_Click"></Button>
+                    </Grid>
+                </Expander>
             </Grid>
 
-            <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="2" VerticalAlignment="Bottom" >
+
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
+
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Update" Click="UpdateParent"></Button>
-                <Button Grid.Column="1" Content="Add" Click="AddParent"></Button>
-                <Button Grid.Column="2" Content="Remove" Click="RemoveParent"></Button>
+                <Button Grid.Column="0" Height="70" Width="70" Content="Update" Click="UpdateParent" ></Button>
+                <Button Grid.Column="1" Height="70" Width="70" Content="Add" Click="AddParent" />
+                <Button Grid.Column="2" Height="70" Width="70" Content="Remove" Click="RemoveParent"  />
             </Grid>
-
-
 
         </Grid>
     </ScrollViewer>

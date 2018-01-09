@@ -6,17 +6,17 @@
              xmlns:local="clr-namespace:UI"
              xmlns:BE="clr-namespace:BE;assembly=BE1" x:Class="UI.ChildUserControl"
              mc:Ignorable="d" 
-             d:DesignHeight="300" Width="665.894" BorderThickness="1" BorderBrush="Black" Background="Beige" Loaded="UserControl_Loaded">
+             d:DesignHeight="300" Width="auto" Height="auto" BorderThickness="1" BorderBrush="Black" Background="Beige" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <CollectionViewSource x:Key="childViewSource" d:DesignSource="{d:DesignInstance {x:Type BE:Child}, CreateList=True}"/>
     </UserControl.Resources>
 
     <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*"></RowDefinition>
-            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="auto" MinHeight="238"></RowDefinition>
+            <RowDefinition Height="auto" MinHeight="60"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid x:Name="inputChildDetails" VerticalAlignment="Top" Margin="10,21,0,-119" HorizontalAlignment="Center" Grid.Row="0" DataContext="{StaticResource childViewSource}">
+        <Grid x:Name="inputChildDetails" VerticalAlignment="Top" Margin="10,21,0,0" HorizontalAlignment="Center" Grid.Row="0" DataContext="{StaticResource childViewSource}" Height="209" Width="588">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -44,34 +44,39 @@
             <!--<Label VerticalAlignment="Center" Grid.Row="3" Margin="3" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="5" Content="About The Child:"/>-->
             <!--input-->
             <!--line 1-->
-            <TextBox x:Name="firstNameTextBox" Width="120" VerticalAlignment="Center" Text="{Binding firstName,  UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="0" Margin="3" Height="23" HorizontalAlignment="Left" Grid.Column="1" TextChanged="firstNameTextBox_TextChanged"/>
+            <TextBox x:Name="firstNameTextBox" Width="120" VerticalAlignment="Center"   Text="{Binding firstName,  UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="0" Margin="3" Height="23" HorizontalAlignment="Left" Grid.Column="1" TextChanged="firstNameTextBox_TextChanged"/>
             <TextBox x:Name="lastNameTextBox" Width="120" VerticalAlignment="Center" Text="{Binding lastName, UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="0" Margin="3" Height="23" HorizontalAlignment="Left" Grid.Column="3" TextChanged="lastNameTextBox_TextChanged"/>
-            <TextBox x:Name="iDTextBox" Width="120" VerticalAlignment="Center" Text="{Binding ID, UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="0" Margin="0" Height="23" HorizontalAlignment="Left" Grid.Column="5" TextChanged="iDTextBox_TextChanged"/>
+            <TextBox x:Name="iDTextBox" Width="120" VerticalAlignment="Center"  Text="{Binding ID, UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="0" Margin="0" Height="23" HorizontalAlignment="Left" Grid.Column="5" TextChanged="iDTextBox_TextChanged"/>
             <!--line 2-->
-            <DatePicker x:Name="dateOfBirthDatePicker" VerticalAlignment="Top" SelectedDate="{Binding dateOfBirth, UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="1" Margin="2.667,4,0,0" HorizontalAlignment="Left" Grid.Column="3"  SelectedDateChanged="IsDateChanged"/>
+            <DatePicker x:Name="dateOfBirthDatePicker" VerticalAlignment="Top" SelectedDate="{Binding dateOfBirth, UpdateSourceTrigger = LostFocus, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Grid.Row="1" Margin="2.667,4,0,0" HorizontalAlignment="Left" Grid.Column="3"/>
             <!--line 3-->
-            <WrapPanel Grid.Row="2" Grid.Column="1">
+            <ScrollViewer Grid.Row="2" Grid.Column="1">
                 <ListBox x:Name="pickLang" SelectionMode="Multiple" ItemsSource="{Binding childLanguage}" SelectionChanged="pickLang_SelectionChanged">
                     <ListBox.Items>
                         <VirtualizingStackPanel BindingGroup="{Binding /childLanguage/, Source={StaticResource childViewSource}}"/>
                     </ListBox.Items>
                 </ListBox>
-            </WrapPanel>
+            </ScrollViewer>
             <CheckBox x:Name="isSpecial" Content="Special Needs" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding specialNeeds, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Checked="isSpecial_Checked"></CheckBox>
-            <ComboBox x:Name="childHMOComboBox" Width="120" VerticalAlignment="Center" Grid.Row="2" Margin="3" ItemsSource="{Binding}" Height="Auto" HorizontalAlignment="Left" DisplayMemberPath="childHMO" Grid.Column="5" SelectionChanged="childHMOComboBox_SelectionChanged">
-                <ComboBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel/>
-                    </ItemsPanelTemplate>
-                </ComboBox.ItemsPanel>
-            </ComboBox>
+            <ComboBox x:Name="childHMOComboBox" Width="120" VerticalAlignment="Center" Grid.Row="2" Margin="3" ItemsSource="{Binding}" Height="Auto" HorizontalAlignment="Left" DisplayMemberPath="childHMO" Grid.Column="5" SelectionChanged="childHMOComboBox_SelectionChanged"/>
+
             <!--line 5-->
-            <Expander Header="About The Child:"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" HorizontalAlignment="Center" >
+            <Expander Header="About The Child:"  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" Height="81" Margin="0,0,76,-0.333" VerticalAlignment="Bottom" >
                 <ScrollViewer Width="433">
-                    <ListBoxItem Height="58" Selected="ListBoxItem_Selected">
+                    <ListBox x:Name ="listOfDetails" Height="58" SelectionChanged="listOfDetails_SelectionChanged" >
                         <!--here, initiate the view bihind by the app.resource item called childDetails
                     when the text box touchd, new text box apeared-->
-                    </ListBoxItem>
+                        <Grid x:Name="childDetails" Height="Auto" Width="Auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                                <ColumnDefinition Width="auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="childMoreDetails" VerticalAlignment="Center"  ItemsSource="{Binding childDetails.key}" Height="Auto" HorizontalAlignment="Left" Grid.Column="0" SelectionChanged="childDetails_SelectionChanged" Grid.ColumnSpan="2" />
+
+                            <TextBox x:Name="expandedDetails"  Text ="{Binding childDetails.value}"  Grid.Column="1" TextChanged="expandedDetails_TextChanged" Margin="0.333,0,-379,0" />
+
+                        </Grid>
+                    </ListBox>
                 </ScrollViewer>
             </Expander>
         </Grid>
@@ -83,7 +88,23 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button x:Name="updateB" Click="update_click" HorizontalAlignment="Center" Grid.Column="1" Height="Auto" Width="100"  Content="Update" ClickMode="Press" ></Button>
+            <Button x:Name="updateB" Click="update_click" HorizontalAlignment="Center" Grid.Column="1" Height="Auto" Width="100"  Content="Update" ClickMode="Press" >
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=firstNameTextBox, Path=Text}" Value="">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=lastNameTextBox, Path=Text}" Value="">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=iDTextBox, Path=Text}" Value="">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button x:Name="removeB" Click="remove_click" HorizontalAlignment="Center" Grid.Column="3"  Height="Auto" Width="100" Padding="10" Content="Remove"></Button>
         </Grid>
     </Grid>

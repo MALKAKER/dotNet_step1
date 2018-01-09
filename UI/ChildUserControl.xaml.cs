@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +24,7 @@ namespace UI
     {
         Child child;
         private bool dateChanged = false;
+        int count = 0;
         public ChildUserControl()
         {
             InitializeComponent();
@@ -30,7 +32,11 @@ namespace UI
             //bind the child entity to the view controls
             this.inputChildDetails.DataContext = child;
 
-            //initialize controls -> todo
+            //initialize controls
+            this.childHMOComboBox.ItemsSource = Enum.GetValues(typeof(HMO));
+            this.dateOfBirthDatePicker.Text = DateTime.Now.ToString();
+            //this.pickLang.ItemsSource = Enum.GetValues(typeof(Language));
+            this.childMoreDetails.ItemsSource = Enum.GetValues(typeof(ChildInfo));
 
         }
 
@@ -93,8 +99,50 @@ namespace UI
 
         private void SetButton()
         {
-            updateB.IsEnabled = (this.lastNameTextBox.Text != "" || this.firstNameTextBox.Text != "" || this.iDTextBox.Text != ""
-                ) ? true : false;// TODO
+        }
+
+        private void expandedDetails_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!(this.expandedDetails.Text).Equals(""))
+            {
+                Grid newGrid = new Grid();
+                newGrid.Name = "childDetails" + count.ToString();
+                // Create Columns  
+                ColumnDefinition gridCol1 = new ColumnDefinition();
+                gridCol1.Width = new GridLength(1, GridUnitType.Star);
+                ColumnDefinition gridCol2 = new ColumnDefinition();
+                gridCol2.Width = new GridLength(3, GridUnitType.Star);
+
+                newGrid.ColumnDefinitions.Add(gridCol1);
+                newGrid.ColumnDefinitions.Add(gridCol2);
+                
+                ComboBox comboBox = new ComboBox( ) ;
+                comboBox.Name = "childMoreDetails" + count.ToString();
+                comboBox.ItemsPanel = new ItemsPanelTemplate();
+                //add combobox to the grid in the first column
+                Grid.SetColumn(comboBox, 0);
+                
+                //comboBox.BindingGroup="{}";todo
+                TextBox textBox = new TextBox();
+                Grid.SetColumn(comboBox, 1);
+
+                this.listOfDetails.Items.Add(newGrid);
+            }
+        }
+
+        private void isSpecial_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void listOfDetails_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void childDetails_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
